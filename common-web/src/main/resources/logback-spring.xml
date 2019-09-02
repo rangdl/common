@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 使用基于spring boot的配置-->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!--<logger name="org.springframework.web" level="DEBUG"/>-->
+    <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG"/>
+    <!--<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>-->
+    <logger name="com.example" level="DEBUG" />
+    <!--<root level="DEBUG">-->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="FILE"/>-->
+    </root>
+</configuration>
+
+<!--自定义配置-->
+
