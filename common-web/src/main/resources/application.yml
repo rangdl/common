@@ -6,7 +6,7 @@ spring:
     password: root
 
   cache:
-    synchronize: false # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
+    synchronize: true # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
 #    type: ehcache
     type: redis
 #  profiles:
