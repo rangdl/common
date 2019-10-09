@@ -7,6 +7,6 @@ package com.example.service;
  * @Description TODO
  * @date 2019/8/29 17:07
  **/
-public interface UserService {
+public interface UserTestService {
     String getUserById(int id);
 }

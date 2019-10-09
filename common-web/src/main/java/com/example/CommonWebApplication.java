@@ -1,8 +1,10 @@
 package com.example;
 
+import com.example.common.shiro.security.JwtProperties;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 
@@ -13,6 +15,7 @@ import org.springframework.cache.annotation.EnableCaching;
  * @Param
  * @return
  **/
+@EnableConfigurationProperties({JwtProperties.class})
 @SpringBootApplication(scanBasePackages = {"com.example"})
 @MapperScan({"com.example.dao"})
 @ServletComponentScan

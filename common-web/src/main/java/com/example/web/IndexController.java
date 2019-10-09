@@ -1,6 +1,6 @@
 package com.example.web;
 
-import com.example.service.UserService;
+import com.example.service.UserTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IndexController {
 
     @Autowired
-    UserService userService;
+    UserTestService userTestService;
 
     @ResponseBody
     @RequestMapping("hello")
     public String hello(){
         String str = "Hello SpringBoot!";
-        str+=userService.getUserById(1);
+        str+=userTestService.getUserById(1);
         return str;
     }
 }
