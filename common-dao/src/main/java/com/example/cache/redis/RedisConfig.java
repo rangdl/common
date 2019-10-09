@@ -32,7 +32,7 @@ import java.util.Set;
  **/
 @EnableCaching
 @Configuration
-//@ConditionalOnProperty(name = "synchronize", havingValue = "true")
+@ConditionalOnProperty(name = "synchronize", havingValue = "true")
 public class RedisConfig extends CachingConfigurerSupport {
 
     @Bean(name="redisTemplate")

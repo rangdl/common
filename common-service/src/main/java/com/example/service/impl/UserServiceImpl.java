@@ -1,12 +1,12 @@
 package com.example.service.impl;
 
-import com.example.cache.redis.CacheSpaceConfig;
-import com.example.dao.UserMapper;
-import com.example.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
+        import com.example.cache.redis.CacheSpaceConfig;
+        import com.example.dao.UserMapper;
+        import com.example.service.UserService;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.cache.annotation.CacheConfig;
+        import org.springframework.cache.annotation.Cacheable;
+        import org.springframework.stereotype.Service;
 
 /**
  * @ClassName IndexServiceImpl

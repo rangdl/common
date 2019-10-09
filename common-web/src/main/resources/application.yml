@@ -7,8 +7,8 @@ spring:
 
   cache:
     synchronize: true # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
-#    type: ehcache
-    type: redis
+    type: ehcache
+#    type: redis
 #  profiles:
 #    active: redis
 
