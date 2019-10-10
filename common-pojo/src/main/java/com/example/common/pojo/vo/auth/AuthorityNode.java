@@ -1,6 +1,7 @@
 package com.example.common.pojo.vo.auth;
 
 import com.google.common.collect.Lists;
+import lombok.Data;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @Date 2019/10/9 18:55
  * @Version 1.0
  **/
+@Data
 public class AuthorityNode {
     private Long id;
     private Long parentId;
