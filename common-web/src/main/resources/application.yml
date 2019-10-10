@@ -1,3 +1,5 @@
+server:
+  port: 9430
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -5,35 +7,9 @@ spring:
     username: root
     password: root
 
-  cache:
-    synchronize: true # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
-    type: ehcache
-#    type: redis
-#  profiles:
-#    active: redis
-
-  redis:
-      port: 6379
-      database: 0
-      host: 172.19.34.19
-      password:
-      jedis:
-        pool:
-          max-active: 8
-          max-wait: -1ms
-          max-idle: 8
-          min-idle: 0
-      timeout: 5000ms
-#  mvc:
-#    view:
-#      prefix: /WEB-INF/views/
-#      suffix: .jsp
-
-logging:
-  config: classpath:log4j2.xml
 
 mybatis:
-  mapper-locations: classpath*:mapper/*.xml
+  mapper-locations: classpath*:mapper/**/*.xml
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -66,25 +42,3 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-
-token:
-  #  token过期时间，单位分钟
-  tokenExpireTime: 120
-  #  RefreshToken过期时间，单位：分钟, 24*60=1440
-  refreshTokenExpireTime: 1440
-  #  shiro缓存有效期，单位分钟,2*60=120
-  shiroCacheExpireTime: 120
-  #  token加密密钥
-  secretKey: storywebkey
-#动态设置拦截器
-permission-config:
-  perms:
-    - key: /
-      value: anon
-    - key: /user/login
-      value: anon
-    - key: /logout
-      value: logout
-    - key: /**
-      value: jwt
-
