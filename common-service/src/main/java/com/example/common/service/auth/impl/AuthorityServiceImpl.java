@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.AuthorityMapper;
 import com.example.common.pojo.constant.Constants;
+import com.example.common.pojo.constant.enumtype.Enums;
 import com.example.common.pojo.entity.auth.Authority;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.security.UserContext;
@@ -116,6 +117,6 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
             auth.setModifiedTime(currentDate);
             baseMapper.insert(auth);
         }
-        return new ResultVo(true,null,null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getResultVo(Enums.ResultEnum.SUCCESS_SAVE);
     }
 }

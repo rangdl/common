@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.RoleMapper;
 import com.example.common.mapper.auth.UserRoleMapper;
 import com.example.common.pojo.constant.Constants;
+import com.example.common.pojo.constant.enumtype.Enums;
 import com.example.common.pojo.entity.auth.Role;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.entity.auth.UserRole;
@@ -65,7 +66,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             role.setModifiedTime(currentDate);
             baseMapper.insert(role);
         }
-        return new ResultVo(true,null,null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess();
     }
 
     /**
@@ -95,7 +96,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         }
         roleAuthorityService.batchInsert(authList);
 
-        return new ResultVo(true,null,null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
     }
 
     /**
@@ -106,6 +107,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public ResultVo selectAuthByRoleId(Long roleId) {
         List<Long> auths= roleAuthorityService.selectAuthByRoleId(roleId);
-        return new ResultVo(true,null,auths, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess(auths);
     }
 }

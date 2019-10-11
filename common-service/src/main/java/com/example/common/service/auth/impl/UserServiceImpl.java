@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
+import com.example.common.pojo.constant.enumtype.Enums;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
@@ -65,28 +66,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public ResultVo login(UserVo user, HttpServletResponse response) {
+
         Assert.notNull(user.getUsername(), "用户名不能为空");
         Assert.notNull(user.getPassword(), "密码不能为空");
 
         User userBean = this.findUserByAccount(user.getUsername());
 
         if (userBean == null) {
-            return new ResultVo(false, "用户不存在", null, Constants.PASSWORD_CHECK_INVALID);
+            return  ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_EXIST_USER);
         }
 
         //ERP账号直接提示账号不存在
         if ("1".equals(userBean.getErpFlag())) {
-            return new ResultVo(false, "账号不存在", null, Constants.PASSWORD_CHECK_INVALID);
+            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_EXIST_ACCOUNT);
         }
 
         String encodePassword = ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
         if (!encodePassword.equals(userBean.getPassword())) {
-            return new ResultVo(false, "用户名或密码错误", null, Constants.PASSWORD_CHECK_INVALID);
+            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_PASSWORD);
         }
 
         //账号是否锁定
         if ("0".equals(userBean.getState())) {
-            return new ResultVo(false, "该账号已被锁定", null, Constants.PASSWORD_CHECK_INVALID);
+            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_LOCKING);
         }
 
         String strToken= this.loginSuccess(userBean.getAccount(), response);
@@ -96,7 +98,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         subject.login(token);
 
         //登录成功
-        return new ResultVo(true, "登录成功", null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess();
     }
 
     /**
@@ -116,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        if ("0".equals(userBean.getStatus())) {
 //            return new Result(false, "该账号已被锁定", null, Constants.PASSWORD_CHECK_INVALID);
 //        }
-        return new ResultVo(true, "登录成功", null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess();
     }
 
     /**
@@ -170,7 +172,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User existUser = this.findUserByAccount(user.getAccount());
             if (existUser != null) {
                 //账号已存在
-                return new ResultVo(false, "账号已经存在");
+                return ResultVo.getResultVo(Enums.ResultEnum.ERROR_EXIST_USER);
             } else {
                 //保存密码
                 if (!StringUtils.isEmpty(user.getPassword())) {
@@ -202,17 +204,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 //更新用户
                 baseMapper.updateById(user);
             } else {
-                return new ResultVo(false, "账号不能修改", null, Constants.PARAMETERS_MISSING);
+                return ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_ALLOW_MODIFY);
             }
         }
 
-        return new ResultVo(true, "修改成功", null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
     }
 
     @Override
     public ResultVo findUserRole(Long userId) {
         List<Long> auths = baseMapper.selectRoleByUserId(userId);
-        return new ResultVo(true, null, auths, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess(auths);
     }
 
     /**
@@ -243,7 +245,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         baseMapper.batchInsertUserRole(authList);
 
-        return new ResultVo(true, null, null, Constants.TOKEN_CHECK_SUCCESS);
+        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_SAVE);
     }
 
     /**
@@ -274,15 +276,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
                     baseMapper.update(entity, wrapper);
 
-                    return new ResultVo(true, "修改成功", null, Constants.TOKEN_CHECK_SUCCESS);
+                    return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
                 } else {
                     //原始密码错误
-                    return new ResultVo(false, "原密码错误", null, Constants.PASSWORD_CHECK_INVALID);
+                    ResultVo.getSuccess(Enums.ResultEnum.ERROR_PASSWORD_PRIMARY);
                 }
-            } else {
-                return new ResultVo(false, "参数不完整", null, Constants.PARAMETERS_MISSING);
             }
         }
-        return new ResultVo(false, "参数不完整", null, Constants.PARAMETERS_MISSING);
+        return ResultVo.getSuccess(Enums.ResultEnum.PARAMETERS_MISSING);
     }
 }

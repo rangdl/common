@@ -1,5 +1,6 @@
 package com.example.common.pojo.vo;
 
+import com.example.common.pojo.constant.enumtype.Enums;
 import lombok.Data;
 
 /**
@@ -13,45 +14,35 @@ import lombok.Data;
 public class ResultVo<T> implements java.io.Serializable {
     private static final long serialVersionUID = 752386055477259305L;
 
-    public static final String SUCCESS = "SUCCESS";
-    public static final Integer SUCCESS_CODE = 20000;
-
     private boolean result = true;
-    private Integer code = SUCCESS_CODE;
-    private String message;
+    private Integer code = Enums.ResultEnum.SUCCESS.getCode();
+    private String message = Enums.ResultEnum.SUCCESS.getDescribe();
     private T data;
 
     public ResultVo() {
     }
 
-    public ResultVo(boolean result, T data) {
-        this.result = result;
+    public ResultVo(Enums enums, T data) {
+        if (enums.equals(Enums.ResultEnum.SUCCESS))
+            this.result = true;
+        else this.result = false;
+        this.code = enums.getCode();
+        this.message = enums.getDescribe();
         this.data = data;
     }
 
-    public ResultVo(boolean result, String message, T data) {
-        this.result = result;
-        this.message = message;
-        this.data = data;
+    public static <T> ResultVo<T> getSuccess() {
+        return new ResultVo<T>();
     }
-
-    public ResultVo(boolean result, String message, T data, Integer code) {
-        this.result = result;
-        this.message = message;
-        this.data = data;
-        this.code = code;
-    }
-
-    public static <T> ResultVo<T> getSuccess(String message, T data, Integer code) {
-        return new ResultVo<T>(true, message, data, code);
-    }
-
-    public static <T> ResultVo<T> getSuccess(String message, T data) {
-        return getSuccess(message, data, SUCCESS_CODE);
-    }
-
     public static <T> ResultVo<T> getSuccess(T data) {
-        return getSuccess(SUCCESS, data);
+        return new ResultVo<T>(Enums.ResultEnum.SUCCESS,data);
+    }
+
+    public static <T> ResultVo<T> getResultVo(Enums enums) {
+        return new ResultVo<T>(enums,null);
+    }
+    public static <T> ResultVo<T> getResultVo(Enums enums,T data) {
+        return new ResultVo<T>(enums,data);
     }
 
     public boolean isResult() {
