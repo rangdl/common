@@ -1,3 +1,6 @@
+project:
+  domain: http://localhost:8080
+
 server:
   port: 8080
 spring:
@@ -62,3 +65,28 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
+
+
+token:
+  #  token过期时间，单位分钟
+  tokenExpireTime: 120
+  #  RefreshToken过期时间，单位：分钟, 24*60=1440
+  refreshCheckTime: 1
+  #  shiro缓存有效期，单位分钟,2*60=120
+  shiroCacheExpireTime: 120
+  #  token加密密钥
+  secretKey: storywebkey
+
+#动态设置拦截器
+permission-config:
+  perms:
+    - key: /
+      value: anon
+    - key: /login/login
+      value: anon
+    - key: /login/test
+      value: anon
+    - key: /logout
+      value: logout
+    - key: /**
+      value: jwt

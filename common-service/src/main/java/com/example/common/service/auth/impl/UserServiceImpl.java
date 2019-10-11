@@ -1,27 +1,31 @@
 package com.example.common.service.auth.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
+import com.example.common.utils.security.JwtProperties;
+import com.example.common.utils.security.JwtUtils;
+import com.example.common.utils.security.SecurityConsts;
+import com.example.common.pojo.constant.enumtype.YNFlagStatusEnum;
 import com.example.common.pojo.entity.auth.LoginLog;
 import com.example.common.pojo.entity.auth.User;
 import com.example.common.pojo.entity.auth.UserRole;
+import com.example.common.pojo.security.JwtToken;
+import com.example.common.pojo.security.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.UserPassword;
 import com.example.common.pojo.vo.auth.UserRoleVo;
 import com.example.common.pojo.vo.auth.UserVo;
 import com.example.common.service.auth.LoginLogService;
 import com.example.common.service.auth.UserService;
+import com.example.common.utils.security.ShiroUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.jedis.JedisUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -30,7 +34,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -38,8 +41,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     JwtProperties jwtProperties;
 
-    @Autowired
-    JedisUtils jedisUtils;
+//    @Autowired
+//    JedisUtils jedisUtils;
 
     @Autowired
     LoginLogService loginLogService;
@@ -76,13 +79,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return new ResultVo(false, "账号不存在", null, Constants.PASSWORD_CHECK_INVALID);
         }
 
-        String encodePassword = ShiroKit.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
+        String encodePassword = ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
         if (!encodePassword.equals(userBean.getPassword())) {
             return new ResultVo(false, "用户名或密码错误", null, Constants.PASSWORD_CHECK_INVALID);
         }
 
         //账号是否锁定
-        if ("0".equals(userBean.getStatus())) {
+        if ("0".equals(userBean.getState())) {
             return new ResultVo(false, "该账号已被锁定", null, Constants.PASSWORD_CHECK_INVALID);
         }
 
@@ -128,12 +131,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //生成token
         JSONObject json = new JSONObject();
-        String token = JwtUtil.sign(account, currentTimeMillis);
+        String token = JwtUtils.sign(account, currentTimeMillis);
         json.put("token", token);
 
         //更新RefreshToken缓存的时间戳
-        String refreshTokenKey= SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
-        jedisUtils.saveString(refreshTokenKey, currentTimeMillis, jwtProperties.getTokenExpireTime()*60);
+//        String refreshTokenKey= SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
+//        jedisUtils.saveString(refreshTokenKey, currentTimeMillis, jwtProperties.getTokenExpireTime()*60);
 
         //记录登录日志
         LoginLog loginLog= new LoginLog();
@@ -171,7 +174,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             } else {
                 //保存密码
                 if (!StringUtils.isEmpty(user.getPassword())) {
-                    user.setPassword(ShiroKit.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
+                    user.setPassword(ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
                 }
                 user.setLastPwdModifiedTime(Date.from(Instant.now()));
 //                user.setStatus(UserStatusEnum.NORMAL.code());
@@ -188,7 +191,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (user.getAccount().equals(userBean.getAccount())) {
                 if (!user.getPassword().equals("******")) {
                     //修改密码
-                    user.setPassword(ShiroKit.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
+                    user.setPassword(ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
                     user.setLastPwdModifiedTime(Date.from(Instant.now()));
                 } else {
                     user.setPassword(userBean.getPassword());
@@ -255,11 +258,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             User user = this.findUserByAccount(UserContext.getCurrentUser().getAccount());
 
-            String encodeNewPassword = ShiroKit.md5(userPassword.getPassword(), SecurityConsts.LOGIN_SALT);
+            String encodeNewPassword = ShiroUtils.md5(userPassword.getPassword(), SecurityConsts.LOGIN_SALT);
             if (YNFlagStatusEnum.FAIL.getCode().equals(user.getErpFlag())) {
                 if (user.getPassword().equals(encodeNewPassword)) {
                     User entity = new User();
-                    entity.setPassword(ShiroKit.md5(userPassword.getNewPassword(), SecurityConsts.LOGIN_SALT));
+                    entity.setPassword(ShiroUtils.md5(userPassword.getNewPassword(), SecurityConsts.LOGIN_SALT));
                     entity.setEditor(UserContext.getCurrentUser().getAccount());
 
                     entity.setEditor(UserContext.getCurrentUser().getAccount());

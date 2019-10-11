@@ -6,6 +6,7 @@ import com.example.common.mapper.auth.AuthorityMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.Authority;
 import com.example.common.pojo.entity.auth.RoleAuthority;
+import com.example.common.pojo.security.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.AuthorityNode;
 import com.example.common.service.auth.AuthorityService;

@@ -10,6 +10,7 @@ import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.Role;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.entity.auth.UserRole;
+import com.example.common.pojo.security.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.RoleAuth;
 import com.example.common.service.auth.RoleAuthorityService;
@@ -64,7 +65,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             role.setModifiedTime(currentDate);
             baseMapper.insert(role);
         }
-        return new Result(true,null,null, Constants.TOKEN_CHECK_SUCCESS);
+        return new ResultVo(true,null,null, Constants.TOKEN_CHECK_SUCCESS);
     }
 
     /**

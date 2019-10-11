@@ -23,23 +23,23 @@ public interface UserMapper extends BaseMapper<User> {
     int persist(User user);
 
 
-//    /**
-//     * 根据用户Id删除角色
-//     * @param user
-//     * @return
-//     */
-//    int deleteRoleByUserId(UserRole user);
-//
-//    /**
-//     * 批量插入
-//     * @param userRoleList
-//     */
-//    void batchInsertUserRole(List<UserRole> userRoleList);
-//
-//    /**
-//     * 根据用户Id获取角色
-//     * @param userId
-//     * @return
-//     */
-//    List<Long> selectRoleByUserId(@Param(value = "userId") Long userId);
+    /**
+     * 根据用户Id删除角色
+     * @param user
+     * @return
+     */
+    int deleteRoleByUserId(UserRole user);
+
+    /**
+     * 批量插入
+     * @param userRoleList
+     */
+    void batchInsertUserRole(List<UserRole> userRoleList);
+
+    /**
+     * 根据用户Id获取角色
+     * @param userId
+     * @return
+     */
+    List<Long> selectRoleByUserId(@Param(value = "userId") Long userId);
 }
