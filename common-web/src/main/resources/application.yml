@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/socket_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
+    url: jdbc:mysql://39.96.14.169:3306/common?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8&allowMultiQueries=true
     username: root
     password: root
 
@@ -68,10 +68,10 @@ mybatis-plus:
 
 
 token:
-  #  token过期时间，单位分钟
-  tokenExpireTime: 120
+  #  token过期时间，单位分钟 7*24*60=1440
+  tokenExpireTime: 10080
   #  RefreshToken过期时间，单位：分钟, 24*60=1440
-  refreshCheckTime: 1
+  refreshCheckTime: 1440
   #  shiro缓存有效期，单位分钟,2*60=120
   shiroCacheExpireTime: 120
   #  token加密密钥

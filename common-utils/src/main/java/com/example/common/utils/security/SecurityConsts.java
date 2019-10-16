@@ -13,11 +13,13 @@ public class SecurityConsts {
     /**
      * request请求头属性
      */
-    public static final String REQUEST_AUTH_HEADER="Authorization";
+    public static final String REQUEST_AUTH_HEADER="token";
 
     /**
      * JWT-account
      */
+    public static final String USER_ID = "id";
+    public static final String USER_NAME = "name";
     public static final String ACCOUNT = "account";
 
     /**

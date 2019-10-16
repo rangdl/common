@@ -60,14 +60,28 @@ public class JwtUtils {
             return null;
         }
     }
+    /**
+     * 获得Token中的信息无需secret解密也能获得
+     * @param token
+     * @return
+     */
+    public static Long getClaimId(String token, String claim) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim(claim).asLong();
+        } catch (JWTDecodeException e) {
+            return null;
+        }
+    }
 
     /**
-     * 生成签名,5min后过期
+     * 生成签名
+     * @param id
      * @param account
      * @param currentTimeMillis
      * @return
      */
-    public static String sign(String account, String currentTimeMillis) {
+    public static String sign(Long id, String account,String name, String currentTimeMillis) {
         // 帐号加JWT私钥加密
         String secret = account + jwtUtils.jwtProperties.getSecretKey();
         // 此处过期时间，单位：毫秒
@@ -75,7 +89,9 @@ public class JwtUtils {
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
         return JWT.create()
+                .withClaim(SecurityConsts.USER_ID, id)
                 .withClaim(SecurityConsts.ACCOUNT, account)
+                .withClaim(SecurityConsts.USER_NAME, name)
                 .withClaim(SecurityConsts.CURRENT_TIME_MILLIS, currentTimeMillis)
                 .withExpiresAt(date)
                 .sign(algorithm);

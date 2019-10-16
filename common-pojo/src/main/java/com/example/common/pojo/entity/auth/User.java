@@ -67,6 +67,11 @@ public class User extends BaseEntity<User> {
      */
     @TableField("modified_time")
     private Date modifiedTime;
+    /**
+     * token 加密key
+     */
+    @TableField("token_key")
+    private String tokenKey;
 
 
     @Override

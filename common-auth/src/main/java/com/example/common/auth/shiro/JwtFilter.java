@@ -78,12 +78,15 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
         //绑定上下文获取账号
         String account = JwtUtils.getClaim(authorization, SecurityConsts.ACCOUNT);
+        String name = JwtUtils.getClaim(authorization, SecurityConsts.USER_NAME);
+        Long id = JwtUtils.getClaimId(authorization,  SecurityConsts.USER_ID);
+        LoginUser loginUser = new LoginUser(id, account, name);
 
         //绑定上下文
-        new UserContext(new LoginUser(account));
+        new UserContext(loginUser);
 
         //检查是否需要更换token，需要则重新颁发
-        this.refreshTokenIfNeed(account, authorization, response);
+        this.refreshTokenIfNeed(loginUser, authorization, response);
 
         // 如果没有抛出异常则代表登入成功，返回true
         return true;
@@ -91,12 +94,12 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
     /**
      * 检查是否需要,若需要则校验时间戳，刷新Token，并更新时间戳
-     * @param account
+     * @param loginUser
      * @param authorization
      * @param response
      * @return
      */
-    private boolean refreshTokenIfNeed(String account, String authorization, ServletResponse response) {
+    private boolean refreshTokenIfNeed(LoginUser loginUser, String authorization, ServletResponse response) {
         Long currentTimeMillis = System.currentTimeMillis();
         //检查刷新规则
         if (this.refreshCheck(authorization, currentTimeMillis)) {
@@ -127,9 +130,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 //            }
 //            syncCacheService.releaseLock(lockName);
             //时间戳一致，则颁发新的令牌
-            logger.info(String.format("为账户%s颁发新的令牌", account));
+            logger.info(String.format("为账户%s颁发新的令牌", loginUser.getAccount()));
             String strCurrentTimeMillis = String.valueOf(currentTimeMillis);
-            String newToken = JwtUtils.sign(account,strCurrentTimeMillis);
+            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),strCurrentTimeMillis);
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, newToken);
             httpServletResponse.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);

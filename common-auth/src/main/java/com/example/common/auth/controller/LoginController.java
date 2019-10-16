@@ -3,6 +3,8 @@ package com.example.common.auth.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.User;
+import com.example.common.pojo.security.LoginUser;
+import com.example.common.pojo.security.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.UserVo;
 import com.example.common.service.auth.AuthorityService;
@@ -83,6 +85,7 @@ public class LoginController {
     @ResponseBody
     @RequestMapping(value="/info",method = {RequestMethod.POST,RequestMethod.GET})
     public ResultVo info(){
+        LoginUser currentUser = UserContext.getCurrentUser();
         ResultVo result = new ResultVo();
         result.setResult(true);
         result.setCode(Constants.TOKEN_CHECK_SUCCESS);

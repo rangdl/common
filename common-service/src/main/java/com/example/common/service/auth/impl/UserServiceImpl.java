@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.pojo.security.LoginUser;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
@@ -32,9 +33,7 @@ import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletResponse;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -90,15 +89,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if ("0".equals(userBean.getState())) {
             return ResultVo.getResultVo(Enums.ResultEnum.ERROR_LOCKING);
         }
-
-        String strToken= this.loginSuccess(userBean.getAccount(), response);
+//        String strToken= this.loginSuccess(userBean.getAccount(), response);
+        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName()), response);
 
         Subject subject = SecurityUtils.getSubject();
         AuthenticationToken token= new JwtToken(strToken);
         subject.login(token);
-
+        Map<Object, Object> map = new HashMap<>();
+        map.put(SecurityConsts.REQUEST_AUTH_HEADER,strToken);
         //登录成功
-        return ResultVo.getSuccess();
+        return ResultVo.getSuccess(map);
     }
 
     /**
@@ -124,16 +124,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 登录后更新缓存，生成token，设置响应头部信息
      *
-     * @param account
+     * @param loginUser
      * @param response
      */
-    private String loginSuccess(String account, HttpServletResponse response) {
+    private String loginSuccess(LoginUser loginUser, HttpServletResponse response) {
 
         String currentTimeMillis = String.valueOf(System.currentTimeMillis());
 
         //生成token
         JSONObject json = new JSONObject();
-        String token = JwtUtils.sign(account, currentTimeMillis);
+        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(), currentTimeMillis);
         json.put("token", token);
 
         //更新RefreshToken缓存的时间戳
@@ -142,12 +142,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //记录登录日志
         LoginLog loginLog= new LoginLog();
-        loginLog.setAccount(account);
+        loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
         loginLog.setContent("登录成功");
         loginLog.setYnFlag(YNFlagStatusEnum.VALID.getCode());
-        loginLog.setCreator(account);
-        loginLog.setEditor(account);
+        loginLog.setCreator(loginUser.getAccount());
+        loginLog.setEditor(loginUser.getAccount());
         loginLog.setCreatedTime(loginLog.getLoginTime());
         loginLogService.save(loginLog);
 
