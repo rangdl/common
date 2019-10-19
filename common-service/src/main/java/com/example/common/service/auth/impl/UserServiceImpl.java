@@ -90,7 +90,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return ResultVo.getResultVo(Enums.ResultEnum.ERROR_LOCKING);
         }
 //        String strToken= this.loginSuccess(userBean.getAccount(), response);
-        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName()), response);
+        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName(),userBean.getTokenKey()), response);
 
         Subject subject = SecurityUtils.getSubject();
         AuthenticationToken token= new JwtToken(strToken);
@@ -133,7 +133,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //生成token
         JSONObject json = new JSONObject();
-        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(), currentTimeMillis);
+        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),loginUser.getTokenKey(), currentTimeMillis);
         json.put("token", token);
 
         //更新RefreshToken缓存的时间戳
@@ -284,5 +284,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         return ResultVo.getSuccess(Enums.ResultEnum.PARAMETERS_MISSING);
+    }
+
+    @Override
+    public boolean checkTokenKey(Long id, Long key) {
+        User user = baseMapper.selectById(id);
+        return user.getTokenKey().equals(key);
     }
 }

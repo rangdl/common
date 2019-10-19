@@ -81,7 +81,7 @@ public class JwtUtils {
      * @param currentTimeMillis
      * @return
      */
-    public static String sign(Long id, String account,String name, String currentTimeMillis) {
+    public static String sign(Long id, String account,String name,Long tokenKey, String currentTimeMillis) {
         // 帐号加JWT私钥加密
         String secret = account + jwtUtils.jwtProperties.getSecretKey();
         // 此处过期时间，单位：毫秒
@@ -92,6 +92,7 @@ public class JwtUtils {
                 .withClaim(SecurityConsts.USER_ID, id)
                 .withClaim(SecurityConsts.ACCOUNT, account)
                 .withClaim(SecurityConsts.USER_NAME, name)
+                .withClaim(SecurityConsts.TOKEN_KEY, tokenKey)
                 .withClaim(SecurityConsts.CURRENT_TIME_MILLIS, currentTimeMillis)
                 .withExpiresAt(date)
                 .sign(algorithm);

@@ -8,13 +8,16 @@ import com.example.common.pojo.security.JwtToken;
 import com.example.common.pojo.security.LoginUser;
 import com.example.common.pojo.security.UserContext;
 import com.example.common.pojo.vo.ResultVo;
+import com.example.common.service.auth.UserService;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -33,6 +36,8 @@ import java.io.PrintWriter;
 
 public class JwtFilter extends BasicHttpAuthenticationFilter {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private UserService userService;
 
     JwtProperties jwtProperties;
 //    ISyncCacheService syncCacheService;
@@ -80,10 +85,16 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         String account = JwtUtils.getClaim(authorization, SecurityConsts.ACCOUNT);
         String name = JwtUtils.getClaim(authorization, SecurityConsts.USER_NAME);
         Long id = JwtUtils.getClaimId(authorization,  SecurityConsts.USER_ID);
-        LoginUser loginUser = new LoginUser(id, account, name);
+        Long key = JwtUtils.getClaimId(authorization,  SecurityConsts.TOKEN_KEY);
+        LoginUser loginUser = new LoginUser(id, account, name,key);
 
         //绑定上下文
         new UserContext(loginUser);
+
+        //检测token是否失效 -登陆成功后用户表存储 token_key(时间戳) 退出登录或者主动使token 失效时更新
+        if (userService.checkTokenKey(id,key)){
+            return false;
+        }
 
         //检查是否需要更换token，需要则重新颁发
         this.refreshTokenIfNeed(loginUser, authorization, response);
@@ -132,7 +143,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             //时间戳一致，则颁发新的令牌
             logger.info(String.format("为账户%s颁发新的令牌", loginUser.getAccount()));
             String strCurrentTimeMillis = String.valueOf(currentTimeMillis);
-            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),strCurrentTimeMillis);
+            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),loginUser.getTokenKey(),strCurrentTimeMillis);
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, newToken);
             httpServletResponse.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);
@@ -166,7 +177,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         if (isLoginAttempt(request, response)) {
             try {
-                this.executeLogin(request, response);
+                if (!this.executeLogin(request, response)){
+                    this.response401(response, "Token已过期!");
+                    return false;
+                }
                 return true;
             } catch (Exception e) {
                 String msg = e.getMessage();

@@ -57,4 +57,10 @@ public interface UserService extends IService<User> {
      * @return
      */
     ResultVo editPassWord(UserPassword userPassword);
+
+    /**
+     * 验证用户 token_key
+     * @return
+     */
+    boolean checkTokenKey(Long id, Long key);
 }

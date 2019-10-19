@@ -39,6 +39,10 @@
             )
         </foreach>
     </insert>
+    <!--批量新增-->
+    <insert id="modifyTokenKeyById" parameterType="Long">
+        update st_user set token_key=UNIX_TIMESTAMP() where id = #{userId}
+    </insert>
 
 
 

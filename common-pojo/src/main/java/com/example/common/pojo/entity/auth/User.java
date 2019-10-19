@@ -71,7 +71,7 @@ public class User extends BaseEntity<User> {
      * token 加密key
      */
     @TableField("token_key")
-    private String tokenKey;
+    private Long tokenKey;
 
 
     @Override

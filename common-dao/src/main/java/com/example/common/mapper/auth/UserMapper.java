@@ -42,4 +42,10 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     List<Long> selectRoleByUserId(@Param(value = "userId") Long userId);
+    /**
+     * 刷新用户tokenKey
+     * @param userId
+     * @return
+     */
+    List<Long> modifyTokenKeyById(@Param(value = "userId") Long userId);
 }
