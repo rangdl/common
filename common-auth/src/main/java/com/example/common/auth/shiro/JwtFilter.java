@@ -48,8 +48,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 //        this.syncCacheService=syncCacheService;
 //        this.jedisUtils = jedisUtils;
 //    }
-    public JwtFilter(JwtProperties jwtProperties){
+    public JwtFilter(JwtProperties jwtProperties,UserService userService){
         this.jwtProperties=jwtProperties;
+        this.userService=userService;
     }
 
     /**

@@ -16,10 +16,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -59,6 +56,7 @@ public class LoginController {
      * @param user
      * @return
      */
+    @CrossOrigin(origins = "http://localhost:8081")
     @ResponseBody
     @RequestMapping(value="/login",method = {RequestMethod.POST,RequestMethod.GET})
     public ResultVo login(HttpServletResponse response, @RequestBody UserVo user) {
@@ -91,11 +89,12 @@ public class LoginController {
         result.setCode(Constants.TOKEN_CHECK_SUCCESS);
         JSONObject json = new JSONObject();
 
-        User user;
-        user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
 
-        json.put("name", user.getName());
-        json.put("erp", user.getErpFlag());
+//        User user;
+//        user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
+
+        json.put("name", currentUser.getName());
+//        json.put("erp", user.getErpFlag());
 
         json.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
         json.put("roles",new String[]{"admin"});
@@ -104,7 +103,7 @@ public class LoginController {
 //        List<ResourceNode> menus = resourceService.findByUserId(user.getId());
 
         //查询权限
-        List<Object> authorityList = authorityService.findByUserId(user.getId());
+        List<Object> authorityList = authorityService.findByUserId(currentUser.getUserId());
 
 //        json.put("menus",menus);
         json.put("auth",authorityList);

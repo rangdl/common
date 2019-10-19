@@ -1,5 +1,6 @@
 package com.example.common.auth.shiro;
 
+import com.example.common.service.auth.UserService;
 import com.example.common.utils.security.JwtProperties;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
@@ -8,6 +9,7 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -30,6 +32,7 @@ public class ShiroConfig {
 
 //    @Autowired
 //    ShiroFilterProperties shiroFilterProperties;
+
 
     @Bean
     public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
@@ -69,15 +72,15 @@ public class ShiroConfig {
         return securityManager;
     }
 
-    @Bean
-    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JwtProperties jwtProp) {
+    @Bean(name = "userService")
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JwtProperties jwtProp,UserService userService) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
         // 添加jwt过滤器
         Map<String, Filter> filterMap = new HashMap<>();
 //        filterMap.put("jwt", new JwtFilter(jwtProp,syncCacheService,jedisUtils));
-        filterMap.put("jwt", new JwtFilter(jwtProp));
+        filterMap.put("jwt", new JwtFilter(jwtProp,userService));
 //        filterMap.put("logout", new SystemLogoutFilter(jedisUtils));
         shiroFilter.setFilters(filterMap);
 

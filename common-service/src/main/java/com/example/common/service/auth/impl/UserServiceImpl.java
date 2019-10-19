@@ -289,6 +289,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean checkTokenKey(Long id, Long key) {
         User user = baseMapper.selectById(id);
-        return user.getTokenKey().equals(key);
+        return !user.getTokenKey().equals(key);
     }
 }
