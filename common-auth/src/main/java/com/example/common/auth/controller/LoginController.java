@@ -56,7 +56,7 @@ public class LoginController {
      * @param user
      * @return
      */
-    @CrossOrigin(origins = "http://localhost:8081")
+//    @CrossOrigin(origins = "http://localhost:8081")
     @ResponseBody
     @RequestMapping(value="/login",method = {RequestMethod.POST,RequestMethod.GET})
     public ResultVo login(HttpServletResponse response, @RequestBody UserVo user) {
