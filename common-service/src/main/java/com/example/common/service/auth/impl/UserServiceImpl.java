@@ -97,6 +97,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         subject.login(token);
         Map<Object, Object> map = new HashMap<>();
         map.put(SecurityConsts.REQUEST_AUTH_HEADER,strToken);
+        map.put(SecurityConsts.USER_NAME,userBean.getName());
+        map.put(SecurityConsts.ACCOUNT,userBean.getAccount());
+        map.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
         //登录成功
         return ResultVo.getSuccess(map);
     }
