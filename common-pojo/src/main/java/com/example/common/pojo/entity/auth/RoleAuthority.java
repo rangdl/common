@@ -37,12 +37,12 @@ public class RoleAuthority extends BaseEntity<RoleAuthority> {
     /**
      * 创建人
      */
-    private String creator;
+    private Long creator;
 
     /**
      * 修改人
      */
-    private String editor;
+    private Long editor;
 
     /**
      * 创建时间

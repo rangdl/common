@@ -110,9 +110,9 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
             auth.setModifiedTime(currentDate);
             baseMapper.updateById(auth);
         }else{
-            auth.setYnFlag("1");
-            auth.setEditor(UserContext.getCurrentUser().getAccount());
-            auth.setCreator(UserContext.getCurrentUser().getAccount());
+            auth.setYnFlag(Constants.VALID);
+            auth.setEditor(UserContext.getCurrentUser().getUserId());
+            auth.setCreator(UserContext.getCurrentUser().getUserId());
             auth.setCreatedTime(currentDate);
             auth.setModifiedTime(currentDate);
             baseMapper.insert(auth);

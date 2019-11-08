@@ -24,6 +24,7 @@ import java.util.Date;
 public class Authority extends BaseEntity<Authority> {
     private static final long serialVersionUID = 1L;
 
+    @TableField("authority_name")
     private String name;
 
     private String code;
@@ -43,17 +44,17 @@ public class Authority extends BaseEntity<Authority> {
      * 有效标志
      */
     @TableField("yn_flag")
-    private String ynFlag;
+    private Boolean ynFlag;
 
     /**
      * 创建人
      */
-    private String creator;
+    private Long creator;
 
     /**
      * 修改人
      */
-    private String editor;
+    private Long editor;
 
     /**
      * 创建时间

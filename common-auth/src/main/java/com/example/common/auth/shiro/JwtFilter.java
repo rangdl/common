@@ -143,7 +143,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             //时间戳一致，则颁发新的令牌
             logger.info(String.format("为账户%s颁发新的令牌", loginUser.getAccount()));
             String strCurrentTimeMillis = String.valueOf(currentTimeMillis);
-            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),loginUser.getTokenKey(),strCurrentTimeMillis);
+            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getUsername(),loginUser.getTokenKey(),strCurrentTimeMillis);
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, newToken);
             httpServletResponse.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);

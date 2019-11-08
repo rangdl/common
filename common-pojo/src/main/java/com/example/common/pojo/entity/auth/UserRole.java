@@ -32,17 +32,17 @@ public class UserRole extends BaseEntity<UserRole> {
      * 有效标志
      */
     @TableField("yn_flag")
-    private String ynFlag;
+    private Boolean ynFlag;
 
     /**
      * 创建人
      */
-    private String creator;
+    private Long creator;
 
     /**
      * 修改人
      */
-    private String editor;
+    private Long editor;
 
     /**
      * 创建时间

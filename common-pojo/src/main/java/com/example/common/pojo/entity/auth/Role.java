@@ -24,6 +24,7 @@ import java.util.Date;
 public class Role extends BaseEntity<Role> {
     private static final long serialVersionUID = 1L;
 
+    @TableField("role_name")
     private String name;
 
     @TableField("role_desc")
@@ -38,12 +39,12 @@ public class Role extends BaseEntity<Role> {
     /**
      * 创建人
      */
-    private String creator;
+    private Long creator;
 
     /**
      * 修改人
      */
-    private String editor;
+    private Long editor;
 
     /**
      * 创建时间

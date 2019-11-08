@@ -11,7 +11,6 @@ import com.example.common.pojo.security.LoginUser;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
-import com.example.common.pojo.constant.enumtype.YNFlagStatusEnum;
 import com.example.common.pojo.entity.auth.LoginLog;
 import com.example.common.pojo.entity.auth.User;
 import com.example.common.pojo.entity.auth.UserRole;
@@ -51,7 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User findUserByAccount(String account) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("account", account);
-        wrapper.eq("yn_flag", YNFlagStatusEnum.VALID.getCode());
+        wrapper.eq("yn_flag", Constants.VALID);
 
         List<User> userList = baseMapper.selectList(wrapper);
         return userList.size() > 0 ? userList.get(0) : null;
@@ -81,7 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         String encodePassword = ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
-        if (!encodePassword.equals(userBean.getPassword())) {
+        if (!encodePassword.equals(userBean.getPwd())) {
             return ResultVo.getResultVo(Enums.ResultEnum.ERROR_PASSWORD);
         }
 
@@ -90,7 +89,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return ResultVo.getResultVo(Enums.ResultEnum.ERROR_LOCKING);
         }
 //        String strToken= this.loginSuccess(userBean.getAccount(), response);
-        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName(),userBean.getTokenKey()), response);
+        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getUsername(),userBean.getTokenKey()), response);
 
         Subject subject = SecurityUtils.getSubject();
         AuthenticationToken token= new JwtToken(strToken);
@@ -133,7 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //生成token
         JSONObject json = new JSONObject();
-        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getName(),loginUser.getTokenKey(), currentTimeMillis);
+        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getUsername(),loginUser.getTokenKey(), currentTimeMillis);
         json.put("token", token);
 
         //更新RefreshToken缓存的时间戳
@@ -145,9 +144,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
         loginLog.setContent("登录成功");
-        loginLog.setYnFlag(YNFlagStatusEnum.VALID.getCode());
-        loginLog.setCreator(loginUser.getAccount());
-        loginLog.setEditor(loginUser.getAccount());
+        loginLog.setYnFlag(Constants.VALID);
+        loginLog.setCreator(loginUser.getUserId());
+        loginLog.setEditor(loginUser.getUserId());
         loginLog.setCreatedTime(loginLog.getLoginTime());
         loginLogService.save(loginLog);
 
@@ -175,14 +174,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return ResultVo.getResultVo(Enums.ResultEnum.ERROR_EXIST_USER);
             } else {
                 //保存密码
-                if (!StringUtils.isEmpty(user.getPassword())) {
-                    user.setPassword(ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
+                if (!StringUtils.isEmpty(user.getPwd())) {
+                    user.setPwd(ShiroUtils.md5(user.getPwd(), SecurityConsts.LOGIN_SALT));
                 }
                 user.setLastPwdModifiedTime(Date.from(Instant.now()));
 //                user.setStatus(UserStatusEnum.NORMAL.code());
-                user.setYnFlag(YNFlagStatusEnum.VALID.getCode());
-                user.setEditor(UserContext.getCurrentUser().getAccount());
-                user.setCreator(UserContext.getCurrentUser().getAccount());
+                user.setYnFlag(Constants.VALID);
+                user.setEditor(UserContext.getCurrentUser().getUserId());
+                user.setCreator(UserContext.getCurrentUser().getUserId());
                 user.setCreatedTime(currentDate);
                 user.setModifiedTime(currentDate);
                 //新增用户
@@ -191,15 +190,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             User userBean = baseMapper.selectById(user.getId());
             if (user.getAccount().equals(userBean.getAccount())) {
-                if (!user.getPassword().equals("******")) {
+                if (!user.getPwd().equals("******")) {
                     //修改密码
-                    user.setPassword(ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT));
+                    user.setPwd(ShiroUtils.md5(user.getPwd(), SecurityConsts.LOGIN_SALT));
                     user.setLastPwdModifiedTime(Date.from(Instant.now()));
                 } else {
-                    user.setPassword(userBean.getPassword());
+                    user.setPwd(userBean.getPwd());
                     user.setLastPwdModifiedTime(userBean.getLastPwdModifiedTime());
                 }
-                user.setEditor(UserContext.getCurrentUser().getAccount());
+                user.setEditor(UserContext.getCurrentUser().getUserId());
                 user.setModifiedTime(currentDate);
                 //更新用户
                 baseMapper.updateById(user);
@@ -236,9 +235,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<UserRole> authList = new ArrayList<>();
         for (Long roleId : userRole.getRoleIds()) {
             tempUserRole = new UserRole(userRole.getUserId(), roleId);
-            tempUserRole.setYnFlag("1");
-            tempUserRole.setEditor(UserContext.getCurrentUser().getAccount());
-            tempUserRole.setCreator(UserContext.getCurrentUser().getAccount());
+            tempUserRole.setYnFlag(Constants.VALID);
+            tempUserRole.setEditor(UserContext.getCurrentUser().getUserId());
+            tempUserRole.setCreator(UserContext.getCurrentUser().getUserId());
             tempUserRole.setCreatedTime(currentDate);
             tempUserRole.setModifiedTime(currentDate);
             authList.add(tempUserRole);
@@ -261,13 +260,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User user = this.findUserByAccount(UserContext.getCurrentUser().getAccount());
 
             String encodeNewPassword = ShiroUtils.md5(userPassword.getPassword(), SecurityConsts.LOGIN_SALT);
-            if (YNFlagStatusEnum.FAIL.getCode().equals(user.getErpFlag())) {
-                if (user.getPassword().equals(encodeNewPassword)) {
+            if (user.getErpFlag()) {
+                if (user.getPwd().equals(encodeNewPassword)) {
                     User entity = new User();
-                    entity.setPassword(ShiroUtils.md5(userPassword.getNewPassword(), SecurityConsts.LOGIN_SALT));
-                    entity.setEditor(UserContext.getCurrentUser().getAccount());
+                    entity.setPwd(ShiroUtils.md5(userPassword.getNewPassword(), SecurityConsts.LOGIN_SALT));
+                    entity.setEditor(UserContext.getCurrentUser().getUserId());
 
-                    entity.setEditor(UserContext.getCurrentUser().getAccount());
+                    entity.setEditor(UserContext.getCurrentUser().getUserId());
                     entity.setModifiedTime(Date.from(Instant.now()));
 
                     QueryWrapper<User> wrapper = new QueryWrapper<>();

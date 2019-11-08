@@ -8,6 +8,10 @@ package com.example.common.pojo.constant;
  * @Version 1.0
  **/
 public class Constants {
+
+    public static final boolean VALID = true;
+    public static final boolean FAIL = false;
+
     /**********************通用代码 start***********************/
     //密码错误
     public static final Integer PASSWORD_CHECK_INVALID = 40001;

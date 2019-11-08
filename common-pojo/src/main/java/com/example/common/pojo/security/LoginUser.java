@@ -17,7 +17,7 @@ public class LoginUser implements Serializable {
 
     public Long userId;          // 主键ID
     public String account;      // 账号
-    public String name;         // 姓名
+    public String username;         // 姓名
     public Long tokenKey;         // 用户token_key
 
     public LoginUser() {
@@ -27,15 +27,15 @@ public class LoginUser implements Serializable {
         this.account=account;
     }
 
-    public LoginUser(Long userId, String account, String name) {
+    public LoginUser(Long userId, String account, String username) {
         this.userId = userId;
         this.account = account;
-        this.name = name;
+        this.username = username;
     }
-    public LoginUser(Long userId, String account, String name, Long tokenKey) {
+    public LoginUser(Long userId, String account, String username, Long tokenKey) {
         this.userId = userId;
         this.account = account;
-        this.name = name;
+        this.username = username;
         this.tokenKey = tokenKey;
     }
 }

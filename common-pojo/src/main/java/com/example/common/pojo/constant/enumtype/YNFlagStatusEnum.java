@@ -8,22 +8,22 @@ package com.example.common.pojo.constant.enumtype;
  * @Version 1.0
  **/
 public enum  YNFlagStatusEnum {
-    VALID("1","有效"),
-    FAIL("0","无效");
+    VALID(1,"有效"),
+    FAIL(0,"无效");
 
-    private YNFlagStatusEnum(String code, String desc) {
+    private YNFlagStatusEnum(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
     private String desc;
-    private String code;
+    private Integer code;
 
     public String getDesc() {
         return desc;
     }
 
-    public String getCode() {
+    public Integer getCode() {
         return code;
     }
 

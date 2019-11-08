@@ -55,13 +55,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public ResultVo persist(Role role) {
         Date currentDate= Date.from(Instant.now());
         if(role.getId()!=null){
-            role.setEditor(UserContext.getCurrentUser().getAccount());
+            role.setEditor(UserContext.getCurrentUser().getUserId());
             role.setModifiedTime(currentDate);
             baseMapper.updateById(role);
         }else{
             role.setYnFlag("1");
-            role.setEditor(UserContext.getCurrentUser().getAccount());
-            role.setCreator(UserContext.getCurrentUser().getAccount());
+            role.setEditor(UserContext.getCurrentUser().getUserId());
+            role.setCreator(UserContext.getCurrentUser().getUserId());
             role.setCreatedTime(currentDate);
             role.setModifiedTime(currentDate);
             baseMapper.insert(role);
@@ -88,8 +88,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         for(Long authId : roleAuth.getAuthorityIds()){
             tempAuth = new RoleAuthority(roleAuth.getRoleId(),authId);
             tempAuth.setYnFlag("1");
-            tempAuth.setEditor(UserContext.getCurrentUser().getAccount());
-            tempAuth.setCreator(UserContext.getCurrentUser().getAccount());
+            tempAuth.setEditor(UserContext.getCurrentUser().getUserId());
+            tempAuth.setCreator(UserContext.getCurrentUser().getUserId());
             tempAuth.setCreatedTime(currentDate);
             tempAuth.setModifiedTime(currentDate);
             authList.add(tempAuth);

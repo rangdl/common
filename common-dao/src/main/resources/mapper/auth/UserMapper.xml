@@ -11,16 +11,16 @@
           role_id
         FROM   st_user_role
         where user_id= #{userId}
-              and yn_flag='1'
+              and yn_flag=1
     </select>
 
     <!--根据UserId删除-->
     <update id="deleteRoleByUserId" parameterType="UserRole">
-      update st_user_role set yn_flag='0',
+      update st_user_role set yn_flag=0,
       editor=#{editor},
       modified_time=#{modifiedTime}
       where user_id= #{userId}
-            and yn_flag='1'
+            and yn_flag=1
     </update>
 
     <!--批量新增-->
@@ -39,7 +39,7 @@
             )
         </foreach>
     </insert>
-    <!--批量新增-->
+    <!--更新用户token时间戳-->
     <insert id="modifyTokenKeyById" parameterType="Long">
         update st_user set token_key=UNIX_TIMESTAMP() where id = #{userId}
     </insert>

@@ -26,35 +26,39 @@ public class User extends BaseEntity<User> {
 
     private String account;
 
-    private String name;
+    private String username;
 
-    private String password;
+    private String pwd;
+
+    private String image;
 
     private String email;
+
+    private String mobile;
 
     @TableField("last_pwd_modified_time")
     private Date lastPwdModifiedTime;
 
-    private String state;
+    private Integer state;
 
     @TableField("erp_flag")
-    private String erpFlag;
+    private Boolean erpFlag;
 
     /**
      * 有效标志
      */
     @TableField("yn_flag")
-    private String ynFlag;
+    private Boolean ynFlag;
 
     /**
      * 创建人
      */
-    private String creator;
+    private Long creator;
 
     /**
      * 修改人
      */
-    private String editor;
+    private Long editor;
 
     /**
      * 创建时间

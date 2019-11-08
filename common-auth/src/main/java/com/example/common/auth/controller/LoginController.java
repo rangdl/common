@@ -94,7 +94,7 @@ public class LoginController {
         User user;
         user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
 
-        json.put("name", user.getName());
+        json.put("name", user.getUsername());
         json.put("erp", user.getErpFlag());
 
         json.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
