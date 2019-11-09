@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.RoleAuthorityMapper;
 import com.example.common.mapper.auth.UserRoleMapper;
+import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.entity.auth.UserRole;
 import com.example.common.service.auth.RoleAuthorityService;
@@ -53,14 +54,14 @@ public class RoleAuthorityServiceImpl extends ServiceImpl<RoleAuthorityMapper, R
         //获取角色
         QueryWrapper<UserRole> userRoleWrapper= new QueryWrapper<>();
         userRoleWrapper.eq("user_id",userId);
-        userRoleWrapper.eq("yn_flag","1");
+        userRoleWrapper.eq("flag",Constants.VALID);
         List<UserRole> userRoleList= userRoleMapper.selectList(userRoleWrapper);
 
         //获取角色权限
         List<RoleAuthority> roleAuthList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(userRoleList)){
             QueryWrapper<RoleAuthority> roleAuthWrapper= new QueryWrapper<>();
-            roleAuthWrapper.eq("yn_flag","1");
+            roleAuthWrapper.eq("flag",Constants.VALID);
             roleAuthWrapper.in("role_id",userRoleList.stream().map(e -> e.getRoleId()).collect(Collectors.toSet()));
             roleAuthList= baseMapper.selectList(roleAuthWrapper);
         }

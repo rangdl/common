@@ -32,19 +32,16 @@ public class Authority extends BaseEntity<Authority> {
     @TableField("full_id")
     private String fullId;
 
-    @TableField("authority_desc")
-    private String authorityDesc;
+    private String desc;
 
-    @TableField("show_order")
-    private Integer showOrder;
+    private Integer sort;
 
     private Long pid;
 
     /**
      * 有效标志
      */
-    @TableField("yn_flag")
-    private Boolean ynFlag;
+    private Boolean flag;
 
     /**
      * 创建人

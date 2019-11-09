@@ -50,7 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User findUserByAccount(String account) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.eq("account", account);
-        wrapper.eq("yn_flag", Constants.VALID);
+        wrapper.eq("flag", Constants.VALID);
 
         List<User> userList = baseMapper.selectList(wrapper);
         return userList.size() > 0 ? userList.get(0) : null;
@@ -75,7 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         //ERP账号直接提示账号不存在
-        if ("1".equals(userBean.getErpFlag())) {
+        if ("1".equals(userBean.getFlagErp())) {
             return ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_EXIST_ACCOUNT);
         }
 
@@ -96,6 +96,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         subject.login(token);
         Map<Object, Object> map = new HashMap<>();
         map.put(SecurityConsts.REQUEST_AUTH_HEADER,strToken);
+        map.put(SecurityConsts.USER_NAME,userBean.getUsername());
+        map.put(SecurityConsts.ACCOUNT,userBean.getAccount());
+        map.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
         //登录成功
         return ResultVo.getSuccess(map);
     }
@@ -144,7 +147,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
         loginLog.setContent("登录成功");
-        loginLog.setYnFlag(Constants.VALID);
+        loginLog.setFlag(Constants.VALID);
         loginLog.setCreator(loginUser.getUserId());
         loginLog.setEditor(loginUser.getUserId());
         loginLog.setCreatedTime(loginLog.getLoginTime());
@@ -179,7 +182,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 }
                 user.setLastPwdModifiedTime(Date.from(Instant.now()));
 //                user.setStatus(UserStatusEnum.NORMAL.code());
-                user.setYnFlag(Constants.VALID);
+                user.setFlag(Constants.VALID);
                 user.setEditor(UserContext.getCurrentUser().getUserId());
                 user.setCreator(UserContext.getCurrentUser().getUserId());
                 user.setCreatedTime(currentDate);
@@ -235,7 +238,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<UserRole> authList = new ArrayList<>();
         for (Long roleId : userRole.getRoleIds()) {
             tempUserRole = new UserRole(userRole.getUserId(), roleId);
-            tempUserRole.setYnFlag(Constants.VALID);
+            tempUserRole.setFlag(Constants.VALID);
             tempUserRole.setEditor(UserContext.getCurrentUser().getUserId());
             tempUserRole.setCreator(UserContext.getCurrentUser().getUserId());
             tempUserRole.setCreatedTime(currentDate);
@@ -260,7 +263,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User user = this.findUserByAccount(UserContext.getCurrentUser().getAccount());
 
             String encodeNewPassword = ShiroUtils.md5(userPassword.getPassword(), SecurityConsts.LOGIN_SALT);
-            if (user.getErpFlag()) {
+            if (user.getFlagErp()) {
                 if (user.getPwd().equals(encodeNewPassword)) {
                     User entity = new User();
                     entity.setPwd(ShiroUtils.md5(userPassword.getNewPassword(), SecurityConsts.LOGIN_SALT));
@@ -270,7 +273,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     entity.setModifiedTime(Date.from(Instant.now()));
 
                     QueryWrapper<User> wrapper = new QueryWrapper<>();
-                    wrapper.eq("yn_flag", "1");
+                    wrapper.eq("flag", Constants.VALID);
                     wrapper.eq("account", user.getAccount());
 
                     baseMapper.update(entity, wrapper);
@@ -288,6 +291,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean checkTokenKey(Long id, Long key) {
         User user = baseMapper.selectById(id);
-        return user.getTokenKey().equals(key);
+        return !user.getTokenKey().equals(key);
     }
 }

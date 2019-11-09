@@ -31,8 +31,7 @@ public class RoleAuthority extends BaseEntity<RoleAuthority> {
     /**
      * 有效标志
      */
-    @TableField("yn_flag")
-    private String ynFlag;
+    private Boolean flag;
 
     /**
      * 创建人

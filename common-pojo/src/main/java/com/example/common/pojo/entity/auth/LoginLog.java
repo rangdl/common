@@ -40,7 +40,7 @@ public class LoginLog extends BaseEntity {
     /**
      * 有效标志
      */
-    private Boolean ynFlag;
+    private Boolean flag;
 
     /**
      * 创建人

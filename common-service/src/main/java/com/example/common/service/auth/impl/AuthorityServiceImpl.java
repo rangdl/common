@@ -30,7 +30,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
     @Override
     public List<AuthorityNode> findAll() {
         QueryWrapper<Authority> wrapper= new QueryWrapper<>();
-        wrapper.eq("yn_flag","1");
+        wrapper.eq("flag",Constants.VALID);
         wrapper.orderBy(true,true,"full_id","show_order");
         List<Authority> resList = baseMapper.selectList(wrapper);
 
@@ -42,7 +42,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
                 newNode = new AuthorityNode(node.getId(),node.getPid(),node.getName());
                 newNode.setCode(node.getCode());
                 newNode.setFullId(node.getFullId());
-                newNode.setShowOrder(node.getShowOrder());
+                newNode.setSort(node.getSort());
                 treeList.add(findChildren(newNode, resList));
             }
         }
@@ -65,7 +65,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
                 newNode = new AuthorityNode(node.getId(),node.getPid(),node.getName());
                 newNode.setCode(node.getCode());
                 newNode.setFullId(node.getFullId());
-                newNode.setShowOrder(node.getShowOrder());
+                newNode.setSort(node.getSort());
                 parentNode.getChildren().add(findChildren(newNode, list));
             }
         }
@@ -83,7 +83,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
 
         Collection coll = roleAuthList.stream().map(e -> e.getAuthorityId()).collect(Collectors.toList());
         List<Object> roleList= baseMapper.selectObjs(new QueryWrapper<Authority>()
-                .eq("yn_flag","1")
+                .eq("flag",Constants.VALID)
                 .in("id",coll)
                 .select("distinct code"));
         return roleList;
@@ -110,7 +110,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
             auth.setModifiedTime(currentDate);
             baseMapper.updateById(auth);
         }else{
-            auth.setYnFlag(Constants.VALID);
+            auth.setFlag(Constants.VALID);
             auth.setEditor(UserContext.getCurrentUser().getUserId());
             auth.setCreator(UserContext.getCurrentUser().getUserId());
             auth.setCreatedTime(currentDate);

@@ -39,12 +39,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public List<Role> findRoleByUserId(Long userId) {
         QueryWrapper<UserRole> userRoleWrapper= new QueryWrapper<>();
         userRoleWrapper.eq("user_id",userId);
-        userRoleWrapper.eq("yn_flag","1");
+        userRoleWrapper.eq("flag",Constants.VALID);
         List<UserRole> userRoleList= userRoleMapper.selectList(userRoleWrapper);
 
         //查询用户角色
         QueryWrapper<Role> roleWrapper= new QueryWrapper<>();
-        userRoleWrapper.eq("yn_flag","1");
+        userRoleWrapper.eq("flag",Constants.VALID);
         roleWrapper.in("id",userRoleList.stream().map(e -> e.getRoleId()).collect(Collectors.toList()));
 
         List<Role> roleList= baseMapper.selectList(roleWrapper);
@@ -59,7 +59,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             role.setModifiedTime(currentDate);
             baseMapper.updateById(role);
         }else{
-            role.setYnFlag("1");
+            role.setFlag(Constants.VALID);
             role.setEditor(UserContext.getCurrentUser().getUserId());
             role.setCreator(UserContext.getCurrentUser().getUserId());
             role.setCreatedTime(currentDate);
@@ -87,7 +87,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         List<RoleAuthority> authList=new ArrayList<>();
         for(Long authId : roleAuth.getAuthorityIds()){
             tempAuth = new RoleAuthority(roleAuth.getRoleId(),authId);
-            tempAuth.setYnFlag("1");
+            tempAuth.setFlag(Constants.VALID);
             tempAuth.setEditor(UserContext.getCurrentUser().getUserId());
             tempAuth.setCreator(UserContext.getCurrentUser().getUserId());
             tempAuth.setCreatedTime(currentDate);

@@ -30,7 +30,7 @@ public class User extends BaseEntity<User> {
 
     private String pwd;
 
-    private String image;
+    private String avatar;
 
     private String email;
 
@@ -41,14 +41,13 @@ public class User extends BaseEntity<User> {
 
     private Integer state;
 
-    @TableField("erp_flag")
-    private Boolean erpFlag;
+    @TableField("flag_erp")
+    private Boolean flagErp;
 
     /**
      * 有效标志
      */
-    @TableField("yn_flag")
-    private Boolean ynFlag;
+    private Boolean flag;
 
     /**
      * 创建人

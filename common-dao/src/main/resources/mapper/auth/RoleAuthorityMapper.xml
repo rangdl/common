@@ -11,23 +11,23 @@
           authority_id
         FROM  st_role_authority
         where role_id= #{roleId}
-              and yn_flag='1'
-              and authority_id not in (select distinct pid from st_authority where yn_flag='1')
+              and flag=true
+              and authority_id not in (select distinct pid from st_authority where flag=true)
     </select>
 
     <!--根据RoleID删除-->
     <update id="deleteAuthByRoleId" parameterType="RoleAuthority">
-      update st_role_authority set yn_flag='0',
+      update st_role_authority set flag=false,
       editor=#{editor},
       modified_time=#{modifiedTime}
       where role_id= #{roleId}
-            and yn_flag='1'
+            and flag=true
     </update>
 
 
     <!--批量新增-->
     <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="false">
-      insert into st_role_authority(role_id,authority_id,yn_flag,creator,editor,created_time,modified_time)
+      insert into st_role_authority(role_id,authority_id,flag,creator,editor,created_time,modified_time)
       values
         <foreach collection="list" item="item" index="index" separator=",">
           (

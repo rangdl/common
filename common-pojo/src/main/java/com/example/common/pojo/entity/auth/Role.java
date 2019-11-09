@@ -27,14 +27,12 @@ public class Role extends BaseEntity<Role> {
     @TableField("role_name")
     private String name;
 
-    @TableField("role_desc")
-    private String roleDesc;
+    private String desc;
 
     /**
      * 有效标志
      */
-    @TableField("yn_flag")
-    private String ynFlag;
+    private Boolean flag;
 
     /**
      * 创建人

@@ -19,7 +19,7 @@ public class AuthorityNode {
     private String fullId;
     private String label;
     private String code;
-    private Integer showOrder;
+    private Integer sort;
     private List<AuthorityNode> children;
 
     public AuthorityNode(){}
