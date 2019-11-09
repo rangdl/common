@@ -1,6 +1,6 @@
 package com.example.common.service.impl;
 
-import com.example.common.cache.redis.CacheSpaceConfig;
+import com.example.common.cache.CacheSpaceConfig;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.service.UserTestService;
 import org.springframework.beans.factory.annotation.Autowired;

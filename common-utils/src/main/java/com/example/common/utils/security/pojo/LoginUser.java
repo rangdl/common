@@ -1,4 +1,4 @@
-package com.example.common.pojo.security;
+package com.example.common.utils.security.pojo;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.example.common.cache.redis;
+package com.example.common.cache;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +12,15 @@ import java.util.Map;
  **/
 public class CacheSpaceConfig  {
     // 测试 begin
+    //用户登陆后 权限缓存空间
+    public static final String CACHE_NAME_AUTH = "cache-auth";// 缓存空间名
+    public static final Long CACHE_NAME_AUTH_SECOND = 1800L;// 缓存时间
+
+
     public static final String CACHE_NAME_USER = "cache-user";// 缓存空间名
     public static final Long CACHE_NAME_USER_SECOND = 1800L;// 缓存时间
+
+
     // 测试 end
 
     // 根据key设定具体的缓存时间

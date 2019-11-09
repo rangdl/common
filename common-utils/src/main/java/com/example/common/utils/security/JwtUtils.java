@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.common.utils.security.pojo.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,23 +77,23 @@ public class JwtUtils {
 
     /**
      * 生成签名
-     * @param id
-     * @param account
+     * @param loginUser
      * @param currentTimeMillis
      * @return
      */
-    public static String sign(Long id, String account,String name,Long tokenKey, String currentTimeMillis) {
+//    public static String sign(Long id, String account, String name, Long tokenKey, String currentTimeMillis) {
+    public static String sign(LoginUser loginUser,String currentTimeMillis) {
         // 帐号加JWT私钥加密
-        String secret = account + jwtUtils.jwtProperties.getSecretKey();
+        String secret = loginUser.getAccount() + jwtUtils.jwtProperties.getSecretKey();
         // 此处过期时间，单位：毫秒
         Date date = new Date(System.currentTimeMillis() + jwtUtils.jwtProperties.getTokenExpireTime()*60*1000l);
         Algorithm algorithm = Algorithm.HMAC256(secret);
 
         return JWT.create()
-                .withClaim(SecurityConsts.USER_ID, id)
-                .withClaim(SecurityConsts.ACCOUNT, account)
-                .withClaim(SecurityConsts.USER_NAME, name)
-                .withClaim(SecurityConsts.TOKEN_KEY, tokenKey)
+                .withClaim(SecurityConsts.USER_ID, loginUser.getUserId())
+                .withClaim(SecurityConsts.ACCOUNT, loginUser.getAccount())
+                .withClaim(SecurityConsts.USER_NAME, loginUser.getUsername())
+                .withClaim(SecurityConsts.TOKEN_KEY, loginUser.getTokenKey())
                 .withClaim(SecurityConsts.CURRENT_TIME_MILLIS, currentTimeMillis)
                 .withExpiresAt(date)
                 .sign(algorithm);

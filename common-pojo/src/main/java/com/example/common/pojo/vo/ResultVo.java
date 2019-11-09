@@ -15,15 +15,15 @@ public class ResultVo<T> implements java.io.Serializable {
     private static final long serialVersionUID = 752386055477259305L;
 
     private boolean result = true;
-    private Integer code = Enums.ResultEnum.SUCCESS.getCode();
-    private String message = Enums.ResultEnum.SUCCESS.getDescribe();
+    private Integer code = Enums.ResultEnum._200.getCode();
+    private String message = Enums.ResultEnum._200.getDescribe();
     private T data;
 
     public ResultVo() {
     }
 
     public ResultVo(Enums enums, T data) {
-        if (enums.equals(Enums.ResultEnum.SUCCESS))
+        if (enums.getCode() % Enums.ResultEnum._200.getCode() < 100)
             this.result = true;
         else this.result = false;
         this.code = enums.getCode();
@@ -35,7 +35,7 @@ public class ResultVo<T> implements java.io.Serializable {
         return new ResultVo<T>();
     }
     public static <T> ResultVo<T> getSuccess(T data) {
-        return new ResultVo<T>(Enums.ResultEnum.SUCCESS,data);
+        return new ResultVo<T>(Enums.ResultEnum._200,data);
     }
 
     public static <T> ResultVo<T> getResultVo(Enums enums) {

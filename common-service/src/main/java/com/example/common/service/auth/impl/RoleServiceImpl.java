@@ -1,8 +1,6 @@
 package com.example.common.service.auth.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.RoleMapper;
 import com.example.common.mapper.auth.UserRoleMapper;
@@ -11,7 +9,7 @@ import com.example.common.pojo.constant.enumtype.Enums;
 import com.example.common.pojo.entity.auth.Role;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.entity.auth.UserRole;
-import com.example.common.pojo.security.UserContext;
+import com.example.common.utils.security.pojo.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.RoleAuth;
 import com.example.common.service.auth.RoleAuthorityService;
@@ -23,7 +21,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,7 +93,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         }
         roleAuthorityService.batchInsert(authList);
 
-        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
+        return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
     }
 
     /**

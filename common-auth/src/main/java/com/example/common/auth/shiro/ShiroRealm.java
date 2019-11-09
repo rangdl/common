@@ -2,7 +2,7 @@ package com.example.common.auth.shiro;
 
 import com.example.common.pojo.entity.auth.Role;
 import com.example.common.pojo.entity.auth.User;
-import com.example.common.pojo.security.JwtToken;
+import com.example.common.utils.security.pojo.JwtToken;
 import com.example.common.service.auth.AuthorityService;
 import com.example.common.service.auth.RoleService;
 import com.example.common.service.auth.UserService;
@@ -19,6 +19,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,12 +36,15 @@ public class ShiroRealm extends AuthorizingRealm {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
+    @Lazy
     private UserService userService;
 
     @Autowired
+    @Lazy
     private RoleService roleService;
 
     @Autowired
+    @Lazy
     private AuthorityService authorityService;
 
     @Override

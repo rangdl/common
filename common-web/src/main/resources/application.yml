@@ -11,13 +11,15 @@ spring:
     password: root
 
   cache:
-    synchronize: true # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
+    # 判断开启哪种缓存,为true 开启ehcache缓存 false 开启redis缓存
+    synchronize: true
     type: ehcache
 #    type: redis
 #  profiles:
 #    active: redis
     ehcache:
       config: classpath:ehcache.xml
+
     redis:
         port: 6379
         database: 0
@@ -33,7 +35,7 @@ spring:
 
 
 mybatis:
-  mapper-locations: classpath*:mapper/**/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

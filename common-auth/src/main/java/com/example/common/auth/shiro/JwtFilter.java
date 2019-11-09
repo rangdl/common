@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.common.pojo.constant.Constants;
-import com.example.common.pojo.security.JwtToken;
-import com.example.common.pojo.security.LoginUser;
-import com.example.common.pojo.security.UserContext;
+import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.utils.security.pojo.JwtToken;
+import com.example.common.utils.security.pojo.LoginUser;
+import com.example.common.utils.security.pojo.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.service.auth.UserService;
 import com.example.common.utils.security.JwtProperties;
@@ -15,9 +16,7 @@ import com.example.common.utils.security.SecurityConsts;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -144,7 +143,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             //时间戳一致，则颁发新的令牌
             logger.info(String.format("为账户%s颁发新的令牌", loginUser.getAccount()));
             String strCurrentTimeMillis = String.valueOf(currentTimeMillis);
-            String newToken = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getUsername(),loginUser.getTokenKey(),strCurrentTimeMillis);
+            String newToken = JwtUtils.sign(loginUser,strCurrentTimeMillis);
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, newToken);
             httpServletResponse.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);
@@ -230,10 +229,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         try {
             out = httpServletResponse.getWriter();
 
-            ResultVo result = new ResultVo();
-            result.setResult(false);
-            result.setCode(Constants.PASSWORD_CHECK_INVALID);
+            ResultVo result = ResultVo.getResultVo(Enums.ResultEnum._401);
             result.setMessage(msg);
+
             out.append(JSON.toJSONString(result));
         } catch (IOException e) {
             logger.error("返回Response信息出现IOException异常:" + e.getMessage());

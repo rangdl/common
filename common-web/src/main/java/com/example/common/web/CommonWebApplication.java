@@ -17,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @return
  **/
 @SpringBootApplication(scanBasePackages = {"com.example.common"})
-@MapperScan({"com.example.common.mapper.*"})
+@MapperScan({"com.example.common.mapper"})
 @ServletComponentScan
 @EnableCaching
 public class CommonWebApplication {

@@ -2,17 +2,19 @@ package com.example.common.service.auth.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.common.cache.CacheSpaceConfig;
 import com.example.common.mapper.auth.AuthorityMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
 import com.example.common.pojo.entity.auth.Authority;
 import com.example.common.pojo.entity.auth.RoleAuthority;
-import com.example.common.pojo.security.UserContext;
+import com.example.common.utils.security.pojo.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.AuthorityNode;
 import com.example.common.service.auth.AuthorityService;
 import com.example.common.service.auth.RoleAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Cacheable(cacheNames = CacheSpaceConfig.CACHE_NAME_AUTH)
 public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority> implements AuthorityService {
     @Autowired
     RoleAuthorityService roleRoleAuthorityService;
@@ -78,6 +81,8 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
      * @return
      */
     @Override
+//    @CacheEvict(key = "'findByUserId_'+#userId")
+    @Cacheable(key = "'findByUserId_'+#userId")
     public List<Object> findByUserId(Long userId) {
         List<RoleAuthority> roleAuthList= roleRoleAuthorityService.findByUserId(userId);
 
@@ -107,6 +112,7 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
         }
 
         if(auth.getId()!=null){
+            auth.setEditor(UserContext.getCurrentUser().getUserId());
             auth.setModifiedTime(currentDate);
             baseMapper.updateById(auth);
         }else{
@@ -117,6 +123,6 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
             auth.setModifiedTime(currentDate);
             baseMapper.insert(auth);
         }
-        return ResultVo.getResultVo(Enums.ResultEnum.SUCCESS_SAVE);
+        return ResultVo.getResultVo(Enums.ResultEnum._200_SAVE);
     }
 }

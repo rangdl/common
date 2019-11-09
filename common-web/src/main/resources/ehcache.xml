@@ -10,6 +10,15 @@
                   diskPersistent="false"
                   diskExpiryThreadIntervalSeconds="120"/>
 
+    <cache name="cache-auth"
+           maxElementsInMemory="10000"
+           eternal="false"
+           overflowToDisk="false"
+           timeToIdleSeconds="900"
+           timeToLiveSeconds="1800"
+           diskPersistent="false"
+           memoryStoreEvictionPolicy="LRU"/>
+
     <cache name="cache-user"
            maxElementsInMemory="1000"
            eternal="false"

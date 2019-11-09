@@ -7,15 +7,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
-import com.example.common.pojo.security.LoginUser;
+import com.example.common.utils.security.pojo.LoginUser;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
 import com.example.common.pojo.entity.auth.LoginLog;
 import com.example.common.pojo.entity.auth.User;
 import com.example.common.pojo.entity.auth.UserRole;
-import com.example.common.pojo.security.JwtToken;
-import com.example.common.pojo.security.UserContext;
+import com.example.common.utils.security.pojo.JwtToken;
+import com.example.common.utils.security.pojo.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.UserPassword;
 import com.example.common.pojo.vo.auth.UserRoleVo;
@@ -65,42 +65,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ResultVo login(UserVo user, HttpServletResponse response) {
 
-        Assert.notNull(user.getUsername(), "用户名不能为空");
-        Assert.notNull(user.getPassword(), "密码不能为空");
+        if (Objects.isNull(user.getUsername()))
+//            return ResultVo.getResultVo(Enums.ResultEnum.E);
+        if (Objects.isNull(user.getPassword()))
+            return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
+//        Assert.notNull(user.getUsername(), "用户名不能为空");
+//        Assert.notNull(user.getPassword(), "密码不能为空");
 
         User userBean = this.findUserByAccount(user.getUsername());
 
         if (userBean == null) {
-            return  ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_EXIST_USER);
+            return  ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
         }
 
         //ERP账号直接提示账号不存在
-        if ("1".equals(userBean.getFlagErp())) {
-            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_EXIST_ACCOUNT);
+        if (userBean.getFlagErp()) {
+            return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
         }
 
         String encodePassword = ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
         if (!encodePassword.equals(userBean.getPwd())) {
-            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_PASSWORD);
+            return ResultVo.getResultVo(Enums.ResultEnum._400_PASSWORD);
         }
 
         //账号是否锁定
-        if ("0".equals(userBean.getState())) {
-            return ResultVo.getResultVo(Enums.ResultEnum.ERROR_LOCKING);
+        if (!Objects.isNull(userBean.getState()) && userBean.getState().equals(0)) {
+            return ResultVo.getResultVo(Enums.ResultEnum._400_LOCKING);
         }
-//        String strToken= this.loginSuccess(userBean.getAccount(), response);
-        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getUsername(),userBean.getTokenKey()), response);
+        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName(),userBean.getTokenKey()), response);
 
         Subject subject = SecurityUtils.getSubject();
         AuthenticationToken token= new JwtToken(strToken);
         subject.login(token);
-        Map<Object, Object> map = new HashMap<>();
-        map.put(SecurityConsts.REQUEST_AUTH_HEADER,strToken);
-        map.put(SecurityConsts.USER_NAME,userBean.getUsername());
-        map.put(SecurityConsts.ACCOUNT,userBean.getAccount());
-        map.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
         //登录成功
-        return ResultVo.getSuccess(map);
+        return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
     }
 
     /**
@@ -135,8 +133,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //生成token
         JSONObject json = new JSONObject();
-        String token = JwtUtils.sign(loginUser.getUserId(),loginUser.getAccount(),loginUser.getUsername(),loginUser.getTokenKey(), currentTimeMillis);
-        json.put("token", token);
+        String token = JwtUtils.sign(loginUser, currentTimeMillis);
+        json.put(SecurityConsts.REQUEST_AUTH_HEADER, token);
 
         //更新RefreshToken缓存的时间戳
 //        String refreshTokenKey= SecurityConsts.PREFIX_SHIRO_REFRESH_TOKEN + account;
@@ -146,7 +144,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LoginLog loginLog= new LoginLog();
         loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
-        loginLog.setContent("登录成功");
+        loginLog.setContent(Enums.ResultEnum._200_LOGIN.getDescribe());
         loginLog.setFlag(Constants.VALID);
         loginLog.setCreator(loginUser.getUserId());
         loginLog.setEditor(loginUser.getUserId());
@@ -174,7 +172,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User existUser = this.findUserByAccount(user.getAccount());
             if (existUser != null) {
                 //账号已存在
-                return ResultVo.getResultVo(Enums.ResultEnum.ERROR_EXIST_USER);
+                return ResultVo.getResultVo(Enums.ResultEnum._400_EXIST_USER);
             } else {
                 //保存密码
                 if (!StringUtils.isEmpty(user.getPwd())) {
@@ -206,11 +204,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 //更新用户
                 baseMapper.updateById(user);
             } else {
-                return ResultVo.getResultVo(Enums.ResultEnum.ERROR_NOT_ALLOW_MODIFY);
+                return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_ALLOW_MODIFY);
             }
         }
 
-        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
+        return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
     }
 
     @Override
@@ -247,7 +245,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         baseMapper.batchInsertUserRole(authList);
 
-        return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_SAVE);
+        return ResultVo.getSuccess(Enums.ResultEnum._200_SAVE);
     }
 
     /**
@@ -278,14 +276,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
                     baseMapper.update(entity, wrapper);
 
-                    return ResultVo.getSuccess(Enums.ResultEnum.SUCCESS_MODIFY);
+                    return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
                 } else {
                     //原始密码错误
-                    ResultVo.getSuccess(Enums.ResultEnum.ERROR_PASSWORD_PRIMARY);
+                    ResultVo.getSuccess(Enums.ResultEnum._400_PASSWORD_PRIMARY);
                 }
             }
         }
-        return ResultVo.getSuccess(Enums.ResultEnum.PARAMETERS_MISSING);
+        return ResultVo.getSuccess(Enums.ResultEnum._400_PARAMETERS_MISSING);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.common.cache.redis;
+package com.example.common.cache;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;

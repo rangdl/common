@@ -3,8 +3,8 @@ package com.example.common.auth.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.User;
-import com.example.common.pojo.security.LoginUser;
-import com.example.common.pojo.security.UserContext;
+import com.example.common.utils.security.pojo.LoginUser;
+import com.example.common.utils.security.pojo.UserContext;
 import com.example.common.pojo.vo.ResultVo;
 import com.example.common.pojo.vo.auth.UserVo;
 import com.example.common.service.auth.AuthorityService;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName LoginController
@@ -70,7 +71,7 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value="/valid_erp",method = {RequestMethod.POST,RequestMethod.GET})
+//    @RequestMapping(value="/valid_erp",method = {RequestMethod.POST,RequestMethod.GET})
     public ResultVo loginErp(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", domain);
         response.setHeader("Access-Control-Allow-Credentials", "true");
@@ -91,13 +92,12 @@ public class LoginController {
         result.setCode(Constants.TOKEN_CHECK_SUCCESS);
         JSONObject json = new JSONObject();
 
-        User user;
-        user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
-
-        json.put("name", user.getUsername());
-        json.put("erp", user.getFlagErp());
-
-        json.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+        User user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
+        json.put(SecurityConsts.USER_NAME,user.getName());
+        json.put(SecurityConsts.ACCOUNT,user.getAccount());
+//        json.put("erp", user.getFlagErp());
+        if (Objects.isNull(user.getAvatar())) user.setAvatar("https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+        json.put("avatar",user.getAvatar());
         json.put("roles",new String[]{"admin"});
 
         //查询菜单

@@ -1,5 +1,7 @@
 package com.example.common.cache.redis;
 
+import com.example.common.cache.CacheSpaceConfig;
+import com.example.common.cache.FastJson2RedisSerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -28,15 +30,15 @@ import java.util.Map;
  **/
 @EnableCaching
 @Configuration
-@ConditionalOnProperty(name = "synchronize", havingValue = "true")
-public class RedisConfig extends CachingConfigurerSupport {
+@ConditionalOnProperty(name = "spring.cache.synchronize", havingValue = "false")
+public class CacheConfigurationRedis extends CachingConfigurerSupport {
 
     @Bean(name="redisTemplate")
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<Object, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
-        com.example.common.cache.redis.FastJson2RedisSerializer<Object> serializer = new com.example.common.cache.redis.FastJson2RedisSerializer<Object>(Object.class);
+        FastJson2RedisSerializer<Object> serializer = new FastJson2RedisSerializer<Object>(Object.class);
 //        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<Object>(Object.class);
         // value值的序列化采用fastJsonRedisSerializer
         template.setValueSerializer(serializer);
