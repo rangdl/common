@@ -14,6 +14,7 @@ import com.example.common.pojo.vo.auth.AuthorityNode;
 import com.example.common.service.auth.AuthorityService;
 import com.example.common.service.auth.RoleAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Cacheable(cacheNames = CacheSpaceConfig.CACHE_NAME_AUTH)
+@CacheConfig(cacheNames = CacheSpaceConfig.CACHE_NAME_AUTH)
 public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority> implements AuthorityService {
     @Autowired
     RoleAuthorityService roleRoleAuthorityService;

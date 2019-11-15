@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Objects;
 
 /**
  * @ClassName JwtFilter
@@ -51,16 +52,28 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         this.jwtProperties=jwtProperties;
         this.userService=userService;
     }
+    /**
+     * @Author rdl
+     * @Description 获取请求头中的token,如果请求头token为空 则在请求参数里获取token
+     * @Date 2019/11/15 8:42
+     * @Param [request]
+     * @return java.lang.String
+     **/
+    public String getToken(ServletRequest request){
+        HttpServletRequest req = (HttpServletRequest) request;
+        String authorization = req.getHeader(SecurityConsts.REQUEST_AUTH_HEADER);
+        if (Objects.isNull(authorization))authorization = String.valueOf(req.getParameter(SecurityConsts.REQUEST_AUTH_HEADER));
+        return authorization;
+    }
+
 
     /**
-     * 检测Header里Authorization字段
+     * 检测Header里token字段
      * 判断是否登录
      */
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-        HttpServletRequest req = (HttpServletRequest) request;
-        String authorization = req.getHeader(SecurityConsts.REQUEST_AUTH_HEADER);
-        return authorization != null;
+        return !Objects.isNull(getToken(request));
     }
 
     /**
@@ -74,9 +87,11 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response){
 //        logger.info("调用executeLogin验证登录");
 
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String authorization = httpServletRequest.getHeader(SecurityConsts.REQUEST_AUTH_HEADER);
-
+        String authorization = getToken(request);
+//        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+//        String authorization = httpServletRequest.getHeader(SecurityConsts.REQUEST_AUTH_HEADER);
+//        //如果请求头token为空 则在请求参数里获取token
+//        if (Objects.isNull(authorization))authorization = request.getParameter(SecurityConsts.REQUEST_AUTH_HEADER);
         JwtToken token = new JwtToken(authorization);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         getSubject(request, response).login(token);

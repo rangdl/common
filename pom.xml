@@ -158,7 +158,7 @@
 
 
     <build>
-        <finalName>${appName}</finalName>
+        <!--<finalName>${appName}</finalName>-->
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
