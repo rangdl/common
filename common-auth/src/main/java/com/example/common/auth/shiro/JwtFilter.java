@@ -85,13 +85,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response){
-//        logger.info("调用executeLogin验证登录");
-
+        logger.info("调用executeLogin验证登录");
         String authorization = getToken(request);
-//        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-//        String authorization = httpServletRequest.getHeader(SecurityConsts.REQUEST_AUTH_HEADER);
-//        //如果请求头token为空 则在请求参数里获取token
-//        if (Objects.isNull(authorization))authorization = request.getParameter(SecurityConsts.REQUEST_AUTH_HEADER);
         JwtToken token = new JwtToken(authorization);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         getSubject(request, response).login(token);

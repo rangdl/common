@@ -63,4 +63,6 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean checkTokenKey(Long id, Long key);
+
+    ResultVo logout(Long id);
 }

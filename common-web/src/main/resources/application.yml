@@ -78,7 +78,7 @@ token:
   #  shiro缓存有效期，单位分钟,2*60=120
   shiroCacheExpireTime: 120
   #  token加密密钥
-  secretKey: storywebkey
+  secretKey: qazwsxedc
 
 #动态设置拦截器
 permission-config:

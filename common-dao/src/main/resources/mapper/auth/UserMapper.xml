@@ -40,7 +40,7 @@
         </foreach>
     </insert>
     <!--更新用户token时间戳-->
-    <insert id="modifyTokenKeyById" parameterType="Long">
+    <insert id="updateTokenKeyById" parameterType="Long">
         update st_user set token_key=UNIX_TIMESTAMP() where id = #{userId}
     </insert>
 

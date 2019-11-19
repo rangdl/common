@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.common.cache.CacheSpaceConfig;
+import com.example.common.cache.aspect.CacheRemove;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
@@ -27,6 +29,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -35,6 +40,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
+@CacheConfig(cacheNames = CacheSpaceConfig.CACHE_NAME_USER)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired
@@ -67,15 +73,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         if (Objects.isNull(user.getUsername()))
 //            return ResultVo.getResultVo(Enums.ResultEnum.E);
-        if (Objects.isNull(user.getPassword()))
-            return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
+            if (Objects.isNull(user.getPassword()))
+                return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
 //        Assert.notNull(user.getUsername(), "用户名不能为空");
 //        Assert.notNull(user.getPassword(), "密码不能为空");
 
         User userBean = this.findUserByAccount(user.getUsername());
 
         if (userBean == null) {
-            return  ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
+            return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
         }
 
         //ERP账号直接提示账号不存在
@@ -92,10 +98,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!Objects.isNull(userBean.getState()) && userBean.getState().equals(0)) {
             return ResultVo.getResultVo(Enums.ResultEnum._400_LOCKING);
         }
-        String strToken= this.loginSuccess(new LoginUser(userBean.getId(),userBean.getAccount(),userBean.getName(),userBean.getTokenKey()), response);
+        String strToken = this.loginSuccess(new LoginUser(userBean.getId(), userBean.getAccount(), userBean.getName(), userBean.getTokenKey()), response);
 
         Subject subject = SecurityUtils.getSubject();
-        AuthenticationToken token= new JwtToken(strToken);
+        AuthenticationToken token = new JwtToken(strToken);
         subject.login(token);
         //登录成功
         return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
@@ -103,6 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * ERP登录
+     *
      * @return
      */
     @Override
@@ -141,7 +148,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        jedisUtils.saveString(refreshTokenKey, currentTimeMillis, jwtProperties.getTokenExpireTime()*60);
 
         //记录登录日志
-        LoginLog loginLog= new LoginLog();
+        LoginLog loginLog = new LoginLog();
         loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
         loginLog.setContent(Enums.ResultEnum._200_LOGIN.getDescribe());
@@ -287,8 +294,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    @Cacheable(key = "'checkTokenKey_'+#id")
     public boolean checkTokenKey(Long id, Long key) {
         User user = baseMapper.selectById(id);
         return !user.getTokenKey().equals(key);
+    }
+
+    @Override
+    @CacheRemove(value = CacheSpaceConfig.CACHE_NAME_USER, key = "'checkTokenKey_'+#id")
+    public ResultVo logout(Long id) {
+        int i = baseMapper.updateTokenKeyById(id);
+        if (i > 0) return ResultVo.getSuccess();
+        else return ResultVo.getResultVo(Enums.ResultEnum._500);
     }
 }

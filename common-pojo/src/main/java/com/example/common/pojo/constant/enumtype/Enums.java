@@ -45,7 +45,7 @@ public interface Enums {
 
 
 
-        _500(50000,"服务端错误!");
+        _500(50000,"请求失败!");
 
 //        PARAMETERS_MISSING(50002,"参数不完整!");
 //

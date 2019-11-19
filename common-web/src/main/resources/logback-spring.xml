@@ -2,12 +2,12 @@
 <!-- 使用基于spring boot的配置-->
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <!--<logger name="org.springframework.web" level="DEBUG"/>-->
-    <!--<logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG"/>-->
-    <!--<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>-->
-    <!--<logger name="com.example" level="DEBUG" />-->
-    <!--<root level="DEBUG">-->
-    <root level="ERROR">
+    <logger name="org.springframework.web" level="DEBUG"/>
+    <logger name="org.springframework.web.servlet.DispatcherServlet" level="DEBUG"/>
+    <logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>
+    <logger name="com.example" level="DEBUG" />
+    <root level="INFO">
+    <!--<root level="ERROR">-->
         <appender-ref ref="CONSOLE"/>
         <!--<appender-ref ref="FILE"/>-->
     </root>

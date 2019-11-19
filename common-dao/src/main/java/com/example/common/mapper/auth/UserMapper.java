@@ -47,5 +47,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @param userId
      * @return
      */
-    List<Long> modifyTokenKeyById(@Param(value = "userId") Long userId);
+    int updateTokenKeyById(@Param(value = "userId") Long userId);
 }

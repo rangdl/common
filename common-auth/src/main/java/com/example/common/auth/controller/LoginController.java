@@ -61,9 +61,18 @@ public class LoginController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value="/login",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value="/login",method = {RequestMethod.POST})
     public ResultVo login(HttpServletResponse response, @RequestBody UserVo user) {
         return userService.login(user,response);
+    }
+    /**
+     * 登出 刷新user的 tokenKey 以此使token失效
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value="/logout",method = {RequestMethod.POST})
+    public ResultVo logout() {
+        return userService.logout(UserContext.getCurrentUser().getUserId());
     }
 
     /**
