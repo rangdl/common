@@ -1,6 +1,7 @@
 package com.example.common.auth.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.example.common.cache.aspect.CacheUtils;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.entity.auth.User;
 import com.example.common.utils.security.pojo.LoginUser;
@@ -85,6 +86,16 @@ public class LoginController {
         response.setHeader("Access-Control-Allow-Origin", domain);
         response.setHeader("Access-Control-Allow-Credentials", "true");
         return userService.loginErp(response);
+    }
+
+    /**
+     * 返回ehcache缓存使用状况
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value="/cache",method = {RequestMethod.POST,RequestMethod.GET})
+    public ResultVo cache() {
+        return ResultVo.getSuccess(CacheUtils.getCacheStatusMap());
     }
 
     /**

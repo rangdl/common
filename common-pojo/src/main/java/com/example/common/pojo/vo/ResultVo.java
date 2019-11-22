@@ -1,6 +1,7 @@
 package com.example.common.pojo.vo;
 
 import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.pojo.constant.enumtype.ResultEnum;
 import lombok.Data;
 
 /**
@@ -15,15 +16,15 @@ public class ResultVo<T> implements java.io.Serializable {
     private static final long serialVersionUID = 752386055477259305L;
 
     private boolean result = true;
-    private Integer code = Enums.ResultEnum._200.getCode();
-    private String message = Enums.ResultEnum._200.getDescribe();
+    private Integer code = ResultEnum._200.getCode();
+    private String message = ResultEnum._200.getDescribe();
     private T data;
 
     public ResultVo() {
     }
 
     public ResultVo(Enums enums, T data) {
-        if (enums.getCode() % Enums.ResultEnum._200.getCode() < 100)
+        if (enums.getCode() % ResultEnum._200.getCode() < 100)
             this.result = true;
         else this.result = false;
         this.code = enums.getCode();
@@ -35,7 +36,13 @@ public class ResultVo<T> implements java.io.Serializable {
         return new ResultVo<T>();
     }
     public static <T> ResultVo<T> getSuccess(T data) {
-        return new ResultVo<T>(Enums.ResultEnum._200,data);
+        return new ResultVo<T>(ResultEnum._200,data);
+    }
+    public static <T> ResultVo<T> getError() {
+        return getError(null);
+    }
+    public static <T> ResultVo<T> getError(T data) {
+        return new ResultVo<T>(ResultEnum._500,data);
     }
 
     public static <T> ResultVo<T> getResultVo(Enums enums) {

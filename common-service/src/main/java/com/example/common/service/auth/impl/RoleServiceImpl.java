@@ -6,6 +6,7 @@ import com.example.common.mapper.auth.RoleMapper;
 import com.example.common.mapper.auth.UserRoleMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.pojo.constant.enumtype.ResultEnum;
 import com.example.common.pojo.entity.auth.Role;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.pojo.entity.auth.UserRole;
@@ -93,7 +94,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         }
         roleAuthorityService.batchInsert(authList);
 
-        return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
+        return ResultVo.getSuccess(ResultEnum._200_MODIFY);
     }
 
     /**

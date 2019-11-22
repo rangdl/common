@@ -9,6 +9,7 @@ import com.example.common.cache.aspect.CacheRemove;
 import com.example.common.mapper.auth.UserMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.pojo.constant.enumtype.ResultEnum;
 import com.example.common.utils.security.pojo.LoginUser;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
@@ -72,31 +73,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public ResultVo login(UserVo user, HttpServletResponse response) {
 
         if (Objects.isNull(user.getUsername()))
-//            return ResultVo.getResultVo(Enums.ResultEnum.E);
+//            return ResultVo.getResultVo(ResultEnum.E);
             if (Objects.isNull(user.getPassword()))
-                return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
+                return ResultVo.getResultVo(ResultEnum._200_LOGIN);
 //        Assert.notNull(user.getUsername(), "用户名不能为空");
 //        Assert.notNull(user.getPassword(), "密码不能为空");
 
         User userBean = this.findUserByAccount(user.getUsername());
 
         if (userBean == null) {
-            return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
+            return ResultVo.getResultVo(ResultEnum._400_NOT_EXIST_ACCOUNT);
         }
 
         //ERP账号直接提示账号不存在
         if (userBean.getFlagErp()) {
-            return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_EXIST_ACCOUNT);
+            return ResultVo.getResultVo(ResultEnum._400_NOT_EXIST_ACCOUNT);
         }
 
         String encodePassword = ShiroUtils.md5(user.getPassword(), SecurityConsts.LOGIN_SALT);
         if (!encodePassword.equals(userBean.getPwd())) {
-            return ResultVo.getResultVo(Enums.ResultEnum._400_PASSWORD);
+            return ResultVo.getResultVo(ResultEnum._400_PASSWORD);
         }
 
         //账号是否锁定
         if (!Objects.isNull(userBean.getState()) && userBean.getState().equals(0)) {
-            return ResultVo.getResultVo(Enums.ResultEnum._400_LOCKING);
+            return ResultVo.getResultVo(ResultEnum._400_LOCKING);
         }
         String strToken = this.loginSuccess(new LoginUser(userBean.getId(), userBean.getAccount(), userBean.getName(), userBean.getTokenKey()), response);
 
@@ -104,7 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         AuthenticationToken token = new JwtToken(strToken);
         subject.login(token);
         //登录成功
-        return ResultVo.getResultVo(Enums.ResultEnum._200_LOGIN);
+        return ResultVo.getResultVo(ResultEnum._200_LOGIN);
     }
 
     /**
@@ -151,7 +152,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LoginLog loginLog = new LoginLog();
         loginLog.setAccount(loginUser.getAccount());
         loginLog.setLoginTime(Date.from(Instant.now()));
-        loginLog.setContent(Enums.ResultEnum._200_LOGIN.getDescribe());
+        loginLog.setContent(ResultEnum._200_LOGIN.getDescribe());
         loginLog.setFlag(Constants.VALID);
         loginLog.setCreator(loginUser.getUserId());
         loginLog.setEditor(loginUser.getUserId());
@@ -179,7 +180,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             User existUser = this.findUserByAccount(user.getAccount());
             if (existUser != null) {
                 //账号已存在
-                return ResultVo.getResultVo(Enums.ResultEnum._400_EXIST_USER);
+                return ResultVo.getResultVo(ResultEnum._400_EXIST_USER);
             } else {
                 //保存密码
                 if (!StringUtils.isEmpty(user.getPwd())) {
@@ -211,11 +212,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 //更新用户
                 baseMapper.updateById(user);
             } else {
-                return ResultVo.getResultVo(Enums.ResultEnum._400_NOT_ALLOW_MODIFY);
+                return ResultVo.getResultVo(ResultEnum._400_NOT_ALLOW_MODIFY);
             }
         }
 
-        return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
+        return ResultVo.getSuccess(ResultEnum._200_MODIFY);
     }
 
     @Override
@@ -252,7 +253,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         baseMapper.batchInsertUserRole(authList);
 
-        return ResultVo.getSuccess(Enums.ResultEnum._200_SAVE);
+        return ResultVo.getSuccess(ResultEnum._200_SAVE);
     }
 
     /**
@@ -283,14 +284,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
                     baseMapper.update(entity, wrapper);
 
-                    return ResultVo.getSuccess(Enums.ResultEnum._200_MODIFY);
+                    return ResultVo.getSuccess(ResultEnum._200_MODIFY);
                 } else {
                     //原始密码错误
-                    ResultVo.getSuccess(Enums.ResultEnum._400_PASSWORD_PRIMARY);
+                    ResultVo.getSuccess(ResultEnum._400_PASSWORD_PRIMARY);
                 }
             }
         }
-        return ResultVo.getSuccess(Enums.ResultEnum._400_PARAMETERS_MISSING);
+        return ResultVo.getSuccess(ResultEnum._400_PARAMETERS_MISSING);
     }
 
     @Override
@@ -305,6 +306,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public ResultVo logout(Long id) {
         int i = baseMapper.updateTokenKeyById(id);
         if (i > 0) return ResultVo.getSuccess();
-        else return ResultVo.getResultVo(Enums.ResultEnum._500);
+        else return ResultVo.getResultVo(ResultEnum._500);
     }
 }

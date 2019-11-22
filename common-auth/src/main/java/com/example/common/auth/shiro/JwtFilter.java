@@ -239,7 +239,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         try {
             out = httpServletResponse.getWriter();
 
-            ResultVo result = ResultVo.getResultVo(Enums.ResultEnum._401);
+            ResultVo result = ResultVo.getResultVo(ResultEnum._401);
             result.setMessage(msg);
 
             out.append(JSON.toJSONString(result));

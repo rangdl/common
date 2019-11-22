@@ -6,6 +6,7 @@ import com.example.common.cache.CacheSpaceConfig;
 import com.example.common.mapper.auth.AuthorityMapper;
 import com.example.common.pojo.constant.Constants;
 import com.example.common.pojo.constant.enumtype.Enums;
+import com.example.common.pojo.constant.enumtype.ResultEnum;
 import com.example.common.pojo.entity.auth.Authority;
 import com.example.common.pojo.entity.auth.RoleAuthority;
 import com.example.common.utils.security.pojo.UserContext;
@@ -124,6 +125,6 @@ public class AuthorityServiceImpl extends ServiceImpl<AuthorityMapper, Authority
             auth.setModifiedTime(currentDate);
             baseMapper.insert(auth);
         }
-        return ResultVo.getResultVo(Enums.ResultEnum._200_SAVE);
+        return ResultVo.getResultVo(ResultEnum._200_SAVE);
     }
 }
