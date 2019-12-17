@@ -94,8 +94,8 @@ public class LoginController {
      */
     @ResponseBody
     @RequestMapping(value="/cache",method = {RequestMethod.POST,RequestMethod.GET})
-    public ResultVo cache() {
-        return ResultVo.getSuccess(CacheUtils.getCacheStatusMap());
+    public ResultVo cache(boolean all) {
+        return ResultVo.getSuccess(CacheUtils.getCacheStatusMap(all));
     }
 
     /**
@@ -112,7 +112,7 @@ public class LoginController {
         result.setCode(Constants.TOKEN_CHECK_SUCCESS);
         JSONObject json = new JSONObject();
 
-        User user = userService.findUserByAccount(JwtUtils.getClaim(SecurityUtils.getSubject().getPrincipal().toString(), SecurityConsts.ACCOUNT));
+        User user = userService.findUserByAccount(currentUser.getAccount());
         json.put(SecurityConsts.USER_NAME,user.getName());
         json.put(SecurityConsts.ACCOUNT,user.getAccount());
 //        json.put("erp", user.getFlagErp());

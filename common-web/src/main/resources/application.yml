@@ -89,7 +89,5 @@ permission-config:
       value: anon
     - key: /login/test
       value: anon
-    - key: /logout
-      value: logout
     - key: /**
       value: jwt

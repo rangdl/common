@@ -161,7 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //写入header
         response.setHeader(SecurityConsts.REQUEST_AUTH_HEADER, token);
-        response.setHeader("Access-Control-Expose-Headers", SecurityConsts.REQUEST_AUTH_HEADER);
+        response.setHeader(SecurityConsts.REQUEST_AUTH_HEADER_CROSS, SecurityConsts.REQUEST_AUTH_HEADER);
 
         return token;
     }
@@ -295,14 +295,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Cacheable(key = "'checkTokenKey_'+#id")
-    public boolean checkTokenKey(Long id, Long key) {
+    @Cacheable(key = "'getTokenKey_'+#id")
+    public long getTokenKey(Long id) {
         User user = baseMapper.selectById(id);
-        return !user.getTokenKey().equals(key);
+        return user.getTokenKey();
     }
 
     @Override
-    @CacheRemove(value = CacheSpaceConfig.CACHE_NAME_USER, key = "'checkTokenKey_'+#id")
+    @CacheRemove(value = CacheSpaceConfig.CACHE_NAME_USER, key = "'getTokenKey_'+#id")
     public ResultVo logout(Long id) {
         int i = baseMapper.updateTokenKeyById(id);
         if (i > 0) return ResultVo.getSuccess();

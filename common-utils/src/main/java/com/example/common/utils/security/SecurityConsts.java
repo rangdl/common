@@ -14,6 +14,7 @@ public class SecurityConsts {
      * request请求头属性
      */
     public static final String REQUEST_AUTH_HEADER="token";
+    public static final String REQUEST_AUTH_HEADER_CROSS="Access-Control-Expose-Headers";
 
     /**
      * JWT-account

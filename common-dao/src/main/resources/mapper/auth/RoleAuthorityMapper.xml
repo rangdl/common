@@ -3,7 +3,7 @@
 <mapper namespace="com.example.common.mapper.auth.RoleAuthorityMapper">
 
 <!-- 开启二级缓存 -->
-<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
     <!--根据角色ID获取权限-->
     <select id="selectAuthByRoleId" resultType="Long">

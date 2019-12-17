@@ -69,7 +69,7 @@ public class ShiroRealm extends AuthorizingRealm {
         }
 
         if (JwtUtils.verify(token)) {
-            return new SimpleAuthenticationInfo(token, token, "shiroRealm");
+             return new SimpleAuthenticationInfo(token, token, "shiroRealm");
         }
         throw new AuthenticationException("Token expired or incorrect.");
     }

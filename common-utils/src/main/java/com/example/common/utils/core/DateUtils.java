@@ -1,4 +1,4 @@
-package com.example.common.utils.date;
+package com.example.common.utils.core;
 
 /**
  * @ClassName DateUtils
@@ -8,4 +8,5 @@ package com.example.common.utils.date;
  * @Version 1.0
  **/
 public class DateUtils {
+
 }

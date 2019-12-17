@@ -12,6 +12,7 @@ import com.example.common.service.auth.UserService;
 import com.example.common.utils.security.JwtProperties;
 import com.example.common.utils.security.JwtUtils;
 import com.example.common.utils.security.SecurityConsts;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -67,8 +69,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
 
 
     /**
-     * 检测Header里token字段
-     * 判断是否登录
+     * 检测Header里token字段是否存在
      */
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
@@ -76,7 +77,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     }
 
     /**
-     * 登录验证
+     * 登录验证 判断是否登录
      * @param request
      * @param response
      * @return
@@ -101,7 +102,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
         new UserContext(loginUser);
 
         //检测token是否失效 -登陆成功后用户表存储 token_key(时间戳) 退出登录或者主动使token 失效时更新
-        if (userService.checkTokenKey(id,key)){
+        if (!key.equals(userService.getTokenKey(id))){
             return false;
         }
 
@@ -184,19 +185,28 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        //检测请求中是否存在token
         if (isLoginAttempt(request, response)) {
             try {
+                //判断是否登录
                 if (!this.executeLogin(request, response)){
                     this.response401(response, "Token已过期!");
                     return false;
+                }
+                //是登录状态 检测登录用户的权限
+                Subject subject = getSubject(request, response);
+                subject.checkPermission("sss");
+                String[] permsArray = (String[]) mappedValue;
+                if (!Objects.isNull(permsArray) && permsArray.length>0){
+//                    Arrays.stream(permsArray).forEach();
                 }
                 return true;
             } catch (Exception e) {
                 String msg = e.getMessage();
                 Throwable throwable = e.getCause();
-                if (throwable != null && throwable instanceof SignatureVerificationException) {
+                if (!Objects.isNull(throwable) && throwable instanceof SignatureVerificationException) {
                     msg = String.format("Token或者密钥不正确(%s)",throwable.getMessage());
-                } else if (throwable != null && throwable instanceof TokenExpiredException) {
+                } else if (!Objects.isNull(throwable) && throwable instanceof TokenExpiredException) {
                     msg = String.format("Token已过期(%s)",throwable.getMessage());
                 } else {
                     if (throwable != null) {

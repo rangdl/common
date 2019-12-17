@@ -13,6 +13,7 @@ import java.util.Map;
 public class CacheSpaceConfig  {
     // 测试 begin
     //用户登陆后 权限缓存空间
+    public static final String CACHE_NAME = "cache";// 缓存空间名称前缀
     public static final String CACHE_NAME_AUTH = "cache-auth";// 缓存空间名
     public static final Long CACHE_NAME_AUTH_SECOND = 1800L;// 缓存时间
 

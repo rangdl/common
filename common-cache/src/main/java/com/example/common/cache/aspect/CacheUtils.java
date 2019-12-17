@@ -1,14 +1,15 @@
 package com.example.common.cache.aspect;
 
+import com.example.common.cache.CacheSpaceConfig;
 import net.sf.ehcache.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @ClassName CacheUtils
@@ -20,7 +21,6 @@ import java.util.Map;
 @Component
 public class CacheUtils {
 
-//    private static CacheManager cacheManager = SpringContextHolder.getBean(CacheManager.class);
     @Autowired
     private CacheManager manager;
     private static CacheManager cacheManager;
@@ -28,40 +28,42 @@ public class CacheUtils {
     public void init(){
         CacheUtils.cacheManager = manager;
         String[] cacheNames = cacheManager.getCacheNames();
-        for (String cacheName : cacheNames) {
-            Cache cache = cacheManager.getCache(cacheName);
+        //初始化设置缓存空间全部记录
+        Arrays.stream(cacheNames).forEach(cacheName->{
+            Cache cache = getCache(cacheName);
             cache.setStatisticsEnabled(true);
-        }
+        });
     }
     public static Object get(String cacheName, String key) {
         Element element = getCache(cacheName).get(key);
         return element == null ? null : element.getObjectValue();
     }
 
-    public static List<Map<String, Object>> getCacheStatusMap() {
-        List<Map<String, Object>> list = new ArrayList<>();
+    /**
+     * @Author rdl
+     * @Description 获取自定义缓存空间使用情况
+     * @Date 2019/11/28 8:46
+     * @Param []
+     * @return java.util.List<java.util.Map<java.lang.String,java.lang.Object>>
+     **/
+    public static List<Map<String, Object>> getCacheStatusMap(boolean all) {
         String[] cacheNames = cacheManager.getCacheNames();
-
-        for (String cacheName : cacheNames) {
+        Stream<String> stream = Arrays.stream(cacheNames);
+        if (!all) stream = Arrays.stream(cacheNames).filter((cn) ->cn.startsWith(CacheSpaceConfig.CACHE_NAME));
+        List<Map<String, Object>> collect = stream.map(s -> {
             Map<String, Object> map = new HashMap<>();
-            Cache cache = cacheManager.getCache(cacheName);
-//            cache.setStatisticsEnabled(true);
+            Cache cache = getCache(s);
             Statistics cacheStatus = cache.getStatistics();
-
-            map.put("cacheName", cacheName);
-
+            map.put("cacheName", s);
             map.put("num", cache.getSize());
             map.put("numName", "缓存数量");
-
             map.put("cacheHits", cacheStatus.getCacheHits());
             map.put("cacheHitsName", "缓存命中数");
-
             map.put("misses", cacheStatus.getCacheMisses());
             map.put("missesName", "未命中数");
-            list.add(map);
-        }
-
-        return list;
+            return map;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
 

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.jedis.JedisUtils;
 
 import javax.servlet.Filter;
@@ -72,8 +73,8 @@ public class ShiroConfig {
         return securityManager;
     }
 
-    @Bean(name = "userService")
-    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JwtProperties jwtProp,UserService userService) {
+    @Bean
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, JwtProperties jwtProp,@Lazy UserService userService) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
 
