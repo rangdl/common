@@ -22,6 +22,7 @@ public class UserContext implements AutoCloseable {
         current.set(user);
     }
 
+    @Override
     public void close() {
         current.remove();
     }

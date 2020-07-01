@@ -59,8 +59,9 @@ public class ImageWatermark {
             if (src != null) {
                 srcWidth = src.getWidth(null);
                 srcHeight = src.getHeight(null);
-                if (srcWidth <= 0 || srcHeight <= 0)
+                if (srcWidth <= 0 || srcHeight <= 0){
                     return null;
+                }
                 // 根据原始图片变换水印图片的尺寸
                 BufferedImage waterMark = resize(shuiyingImg, srcWidth, srcHeight);
                 /* 添加水印 */
@@ -138,7 +139,7 @@ public class ImageWatermark {
         String imgFile2 ="C:/Users/rdl/Pictures/Screenshots/123.png";
 
         float alpha = 0.5f;
-        pressText("呵呵哒",imgFile,imgFile2,Font.DIALOG,Font.PLAIN,Color.DARK_GRAY ,18,10,20,alpha);
+        pressText2("呵呵哒",imgFile,imgFile2,Font.DIALOG,Font.PLAIN,Color.DARK_GRAY ,18,0,0,alpha);
     }
 
     /**
@@ -190,7 +191,7 @@ public class ImageWatermark {
             double ratio = 0.0; // 缩放比例
             File f = new File(srcImageFile);
             BufferedImage bi = ImageIO.read(f);
-            Image itemp = bi.getScaledInstance(width, height, bi.SCALE_SMOOTH);
+            Image itemp = bi.getScaledInstance(width, height, BufferedImage.SCALE_SMOOTH);
             // 计算比例
             if ((bi.getHeight() > height) || (bi.getWidth() > width)) {
                 if (bi.getHeight() > bi.getWidth()) {
@@ -206,10 +207,11 @@ public class ImageWatermark {
                 Graphics2D g = image.createGraphics();
                 g.setColor(Color.white);
                 g.fillRect(0, 0, width, height);
-                if (width == itemp.getWidth(null))
+                if (width == itemp.getWidth(null)){
                     g.drawImage(itemp, 0, (height - itemp.getHeight(null)) / 2, itemp.getWidth(null), itemp.getHeight(null), Color.white, null);
-                else
+                } else {
                     g.drawImage(itemp, (width - itemp.getWidth(null)) / 2, 0, itemp.getWidth(null), itemp.getHeight(null), Color.white, null);
+                }
                 g.dispose();
                 itemp = image;
             }
@@ -267,10 +269,12 @@ public class ImageWatermark {
      **/
     public final static void cut(String srcImageFile, String descDir, int rows, int cols) {
         try {
-            if (rows <= 0 || rows > 20)
+            if (rows <= 0 || rows > 20){
                 rows = 2; // 切片行数
-            if (cols <= 0 || cols > 20)
+            }
+            if (cols <= 0 || cols > 20){
                 cols = 2; // 切片列数
+            }
             // 读取源图像
             BufferedImage bi = ImageIO.read(new File(srcImageFile));
             int srcWidth = bi.getHeight(); // 源图宽度
@@ -469,12 +473,17 @@ public class ImageWatermark {
     public final static void pressText2(String pressText, String srcImageFile, String destImageFile, String fontName, int fontStyle, Color color, int fontSize, int x, int y, float alpha) {
         try {
             File img = new File(srcImageFile);
-            Image src = ImageIO.read(img);
-            int width = src.getWidth(null);
-            int height = src.getHeight(null);
-            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Image srcImg = ImageIO.read(img);
+            // Graphics graphics = src.getGraphics();
+
+            int width = srcImg.getWidth(null);
+            int height = srcImg.getHeight(null);
+            // BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(srcImg.getWidth(null),
+                    srcImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
             Graphics2D g = image.createGraphics();
-            g.drawImage(src, 0, 0, width, height, null);
+            g.drawImage(srcImg.getScaledInstance(srcImg.getWidth(null), srcImg
+                    .getHeight(null), Image.SCALE_SMOOTH), 0, 0, null);
             g.setColor(color);
             g.setFont(new Font(fontName, fontStyle, fontSize));
             g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));

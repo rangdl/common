@@ -15,10 +15,23 @@ import java.io.Serializable;
 public class LoginUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public Long userId;          // 主键ID
-    public String account;      // 账号
-    public String username;         // 姓名
-    public Long tokenKey;         // 用户token_key
+    /**
+     * 主键ID
+     */
+    public Long userId;
+    /**
+     *账号
+     */
+    public String account;
+    /**
+     * 姓名
+     */
+    public String username;
+    /**
+     * 用户token_key
+     */
+    public Long tokenKey;
+
 
     public LoginUser() {
     }

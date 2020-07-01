@@ -36,9 +36,15 @@ public class ObjectUtils {
         }finally {
             try {
                 bout.close();
-                if (!Objects.isNull(oos)) oos.close();
-                if (!Objects.isNull(bin)) bin.close();
-                if (!Objects.isNull(ois)) ois.close();
+                if (!Objects.isNull(oos)) {
+                    oos.close();
+                }
+                if (!Objects.isNull(bin)) {
+                    bin.close();
+                }
+                if (!Objects.isNull(ois)) {
+                    ois.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
